@@ -1,9 +1,51 @@
-// src/App.jsx
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Home from './pages/Home';
+import About from './pages/About';
+import SignIn from './pages/SignIn';
+import Dashboard from './pages/Dashboard';
+import Flags from './pages/Flags';
+import SignUp from './pages/SignUp';
+import Header from './components/Header';
+import Footer from './components/Footer';
+import PrivateRoute from './components/PrivateRoute';
+import OnlyAdminPrivateRoute from './components/OnlyAdminPrivateRoute';
+import CreateFlag from './pages/createFlag.jsx';
+import UpdatePost from './pages/UpdatePost';
+import PostPage from './pages/PostPage';
+import ScrollToTop from './components/ScrollToTop';
+import Search from './pages/Search';
+import Help from './pages/helpnContact';
+import ContactPage from './pages/contact';
+
+import { Toaster } from 'react-hot-toast'; 
 export default function App() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white">
-      <h1 className="text-4xl font-bold mb-4">Tailwind CSS is Working! 🎉</h1>
-      <p className="text-lg">Styled using utility classes from Tailwind.</p>
-    </div>
+    <BrowserRouter>
+      <ScrollToTop />
+      <Header />
+       <Toaster position="top-right" reverseOrder={false} /> 
+      <Routes>
+        <Route path='/' element={<Home />} />
+         <Route path='/help' element={<Help/>} />
+         <Route path='/contact' element={<ContactPage/>} />
+        <Route path='/about' element={<About />} />
+        <Route path='/sign-in' element={<SignIn />} />
+        <Route path='/sign-up' element={<SignUp />} />
+        <Route path='/search' element={<Search />} />
+        <Route element={<PrivateRoute />}>
+          <Route path='/dashboard' element={<Dashboard />} />
+           <Route path='/createflag' element={<CreateFlag />} />
+           <Route path='/update-post/:postId' element={<UpdatePost />} />
+        </Route>
+        <Route element={<OnlyAdminPrivateRoute />}>
+          {/* <Route path='/create-post' element={<CreatePost />} /> */}
+          
+        </Route>
+
+        <Route path='/flags' element={<Flags />} />
+        <Route path='/post/:postSlug' element={<PostPage />} />
+      </Routes>
+      <Footer />
+    </BrowserRouter>
   );
 }
