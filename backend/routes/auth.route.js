@@ -1,69 +1,99 @@
 
 import express from 'express';
 import {
-  createComment,
-  deleteComment,
-  editComment,
-  getPostComments,
-  getcomments,
-  likeComment,
-} from '../controllers/comment.controller.js';
+  google,
+  signin,
+  signup,
+  verifyEmail,
+  requestPasswordReset,
+  resetPassword,
+  sendContactEmail,
+  logout,
+} from '../controllers/auth.controller.js';
+// import svgCaptcha from "svg-captcha";
 
-import { isAdmin } from '../utils/verifyRoles.js';
+import { getAllReports } from '../controllers/admin.controller.js';
+import { deleteReportAndPost } from '../controllers/report.controller.js';
+
 import { verifyToken } from '../utils/verifyUser.js';
-import { body, param } from 'express-validator';
-import { commentLimiter } from '../utils/rateLimiter.js';
+import { isAdmin } from '../utils/verifyRoles.js';
+import { verifyCaptchaAndSignup,getCaptcha } from '../controllers/captcha.controller.js';
+import {
+  validateEmail,
+  validateSignup,
+  validatePasswordReset,
+} from '../utils/validators.js';
+
+import rateLimit from 'express-rate-limit';
 
 const router = express.Router();
 
+// 🔐 Per-route rate limiters
+const signupLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000, // 10 minutes
+  max: 10,
+  message: 'Too many signup attempts. Please try again later.',
+});
 
-// ✅ Public: Get all comments for a post
-router.get(
-  '/getPostComments/:postId',
-  param('postId').isMongoId().withMessage('Invalid Post ID'),
-  getPostComments
-);
+const signinLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000,
+  max: 5,
+  message: 'Too many login attempts. Please try again later.',
+});
 
-// ✅ Authenticated users only
-router.post(
-  '/create',
-  verifyToken,
-  commentLimiter,
-  body('content')
-    .trim()
-    .isLength({ min: 1, max: 1000 })
-    .withMessage('Comment must be between 1 and 1000 characters'),
-  body('postId').isMongoId().withMessage('Invalid Post ID'),
-  createComment
-);
+const resetLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 3,
+  message: 'Too many password reset requests. Try again later.',
+});
 
-router.put(
-  '/likeComment/:commentId',
-  verifyToken,
-  commentLimiter,
-  param('commentId').isMongoId().withMessage('Invalid Comment ID'),
-  likeComment
-);
+const emailLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: 'Too many email submissions. Try again later.',
+});
 
-router.put(
-  '/editComment/:commentId',
-  verifyToken,
-  param('commentId').isMongoId().withMessage('Invalid Comment ID'),
-  body('content')
-    .trim()
-    .isLength({ min: 1, max: 1000 })
-    .withMessage('Updated comment must be between 1 and 1000 characters'),
-  editComment
-);
+// 🧼 Validate /sendEmail input
+const validateContactMessage = (req, res, next) => {
+  const { name, email, message } = req.body;
+  if (
+    typeof name !== 'string' ||
+    typeof email !== 'string' ||
+    typeof message !== 'string' ||
+    message.trim().length === 0 ||
+    message.length > 1000
+  ) {
+    return res.status(400).json({ error: 'Invalid input' });
+  }
+  next();
+};
 
-router.delete(
-  '/deleteComment/:commentId',
-  verifyToken,
-  param('commentId').isMongoId().withMessage('Invalid Comment ID'),
-  deleteComment
-);
+// 🔐 Auth routes
+router.post('/signup', validateSignup, signupLimiter, verifyCaptchaAndSignup, signup);
+router.post('/signin', signinLimiter, signin);
+router.post('/google', signinLimiter, google);
+router.post('/verify-email', validateEmail, verifyEmail);
+router.post('/request-password-reset', validateEmail, resetLimiter, requestPasswordReset);
+router.post('/reset-password', validatePasswordReset, resetLimiter, resetPassword);
 
-// ✅ Admin only: all comments and stats
-router.get('/getcomments', verifyToken, isAdmin, getcomments);
+// 📩 Contact/Email route with validation
+router.post('/sendEmail', validateContactMessage, emailLimiter, sendContactEmail);
+
+// 🔒 Admin-only routes
+router.get('/admin/reports', verifyToken, isAdmin, getAllReports);
+router.delete('/admin/deleteWithPost/:reportId', verifyToken, isAdmin, deleteReportAndPost);
+
+// 🔓 Logout route
+router.post('/logout', (req, res) => {
+  res.clearCookie('access_token', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'Strict',
+  });
+  res.status(200).json({ message: 'Logged out successfully' });
+});
+
+// Route to get CAPTCHA
+router.get('/captcha', getCaptcha);
 
 export default router;
