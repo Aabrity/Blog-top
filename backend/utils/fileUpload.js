@@ -1,35 +1,4 @@
-// import crypto from 'crypto';
-// import multer from 'multer';
-// import path from 'path';
 
-// // Storage config - files stored in 'uploads' folder (outside web root if possible)
-// const storage = multer.diskStorage({
-//   destination: (req, file, cb) => {
-//     cb(null, 'uploads/'); // Ensure this folder exists and is not publicly accessible
-//   },
-//   filename: (req, file, cb) => {
-//     const ext = path.extname(file.originalname).toLowerCase();
-//     // Generate a random safe filename
-//     const randomName = crypto.randomBytes(16).toString('hex') + ext;
-//     cb(null, randomName);
-//   },
-// });
-
-// // Accept only image mime types
-// const fileFilter = (req, file, cb) => {
-//   if (file.mimetype.startsWith('image/')) {
-//     cb(null, true);
-//   } else {
-//     cb(new Error('Only image files are allowed!'));
-//   }
-// };
-
-// // 2 MB file size limit
-// export const upload = multer({
-//   storage,
-//   limits: { fileSize: 2 * 1024 * 1024 },
-//   fileFilter,
-// });
 import fs from 'fs';
 import multer from 'multer';
 import path from 'path';
