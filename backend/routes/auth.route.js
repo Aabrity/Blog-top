@@ -9,6 +9,7 @@ import {
   resetPassword,
   sendContactEmail,
   logout,
+  verifySigninOTP
 } from '../controllers/auth.controller.js';
 // import svgCaptcha from "svg-captcha";
 
@@ -22,6 +23,7 @@ import {
   validateEmail,
   validateSignup,
   validatePasswordReset,
+  
 } from '../utils/validators.js';
 
 import rateLimit from 'express-rate-limit';
@@ -78,7 +80,7 @@ router.post('/reset-password', validatePasswordReset, resetLimiter, resetPasswor
 
 // 📩 Contact/Email route with validation
 router.post('/sendEmail', validateContactMessage, emailLimiter, sendContactEmail);
-
+router.post('/verify-signin-otp', verifySigninOTP);
 // 🔒 Admin-only routes
 router.get('/admin/reports', verifyToken, isAdmin, getAllReports);
 router.delete('/admin/deleteWithPost/:reportId', verifyToken, isAdmin, deleteReportAndPost);

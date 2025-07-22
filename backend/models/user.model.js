@@ -92,6 +92,7 @@ emailChangeNewEmail: {
   },
   select: false,
 },
+
   },
   { timestamps: true }
 );

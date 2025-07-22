@@ -11,7 +11,8 @@ import {
   updateUserProfilePicture,
   getUserPublicInfo,
   requestEmailChange,
-  confirmEmailChange
+  confirmEmailChange,
+  
 } from '../controllers/user.controller.js';
 
 import { checkPasswordExpiry } from '../utils/checkPasswordExpiry.js'; // ✅ NEW

@@ -23,6 +23,8 @@ export const test = (req, res) => {
   res.json({ message: 'API is working!' });
 };
 
+
+
 export const requestEmailChange = async (req, res, next) => {
   try {
     const { userId } = req.params;
@@ -101,76 +103,6 @@ export const requestEmailChange = async (req, res, next) => {
 };
 
 
-// export const requestEmailChange = async (req, res, next) => {
-//   try {
-//     const { userId } = req.params;
-//     let { email } = req.body;
-
-//     email = sanitizeString(email);
-
-//     if (!validateObjectId(userId)) {
-//       return next(errorHandler(400, 'Invalid user ID'));
-//     }
-
-//     if (!isEmail(email)) {
-//       return next(errorHandler(400, 'Invalid email format'));
-//     }
-
-//     const user = await User.findById(userId).select('+email +emailChangeOTP +emailChangeOTPExpiry +emailChangeNewEmail');
-//     if (!user) {
-//       return next(errorHandler(404, 'User not found'));
-//     }
-
-//     const newEmailLower = email.toLowerCase();
-
-//     if (newEmailLower === user.email.toLowerCase()) {
-//       return next(errorHandler(400, 'New email is the same as current email'));
-//     }
-
-//     // Generate 6-digit OTP
-//     const otp = (Math.floor(100000 + Math.random() * 900000)).toString();
-//     const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 min expiry
-
-//     user.emailChangeOTP = otp;
-//     user.emailChangeOTPExpiry = otpExpiry;
-//     user.emailChangeNewEmail = newEmailLower;
-
-//     await user.save();
-
-//     // Notify current email about change request
-//     await sendEmail(
-//       user.email,
-//       'Email Change Requested',
-//       `
-//         <p>Hello ${user.username},</p>
-//         <p>We received a request to change the email on your account to <strong>${newEmailLower}</strong>.</p>
-//         <p>If you did not request this change, please contact support immediately.</p>
-//         <br/>
-//         <p>Regards,<br/>RatoFlag Security Team</p>
-//       `
-//     );
-
-//     // Send OTP to new email for confirmation
-//     await sendEmail(
-//       newEmailLower,
-//       'Confirm Your New Email',
-//       `
-//         <p>Hello,</p>
-//         <p>Please use the following OTP to confirm your new email address:</p>
-//         <h2>${otp}</h2>
-//         <p>This code expires in 10 minutes.</p>
-//         <br/>
-//         <p>Regards,<br/>RatoFlag Security Team</p>
-//       `
-//     );
-
-//     return res.status(200).json({
-//       message: 'Verification OTP sent to new email. Please confirm to complete the update.',
-//     });
-//   } catch (error) {
-//     next(error);
-//   }
-// };
 
 
 export const confirmEmailChange = async (req, res, next) => {
