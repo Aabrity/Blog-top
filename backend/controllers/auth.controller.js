@@ -104,13 +104,21 @@ export const signin = async (req, res, next) => {
 
     const { password: _, ...rest } = user._doc;
     res
-      .status(200)
-      .cookie('access_token', token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'Strict',
-      })
-      .json(rest);
+      // .status(200)
+      // .cookie('access_token', token, {
+      //   httpOnly: true,
+      //   secure: process.env.NODE_ENV === 'production',
+      //   sameSite: 'Strict',
+      // })
+      // .json(rest);
+      res
+  .status(200)
+  .cookie('access_token', token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'Strict',
+  })
+  .json({ user: rest, token }); // ✅ added token here
   } catch (error) {
     next(error);
   }
@@ -280,7 +288,7 @@ export const google = async (req, res, next) => {
     const token = jwt.sign(
       { id: user._id, isAdmin: user.isAdmin },
       process.env.JWT_SECRET,
-      { expiresIn: '15m' }
+      { expiresIn: '2h' }
     );
 
     const {
@@ -295,13 +303,22 @@ export const google = async (req, res, next) => {
     await logActivity(user._id, 'Google OAuth Sign In', { email });
 
     res
-      .cookie('access_token', token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'Strict',
-      })
-      .status(200)
-      .json(userData);
+      // .cookie('access_token', token, {
+      //   httpOnly: true,
+      //   secure: process.env.NODE_ENV === 'production',
+      //   sameSite: 'Strict',
+      // })
+      // .status(200)
+      // .json(userData);
+      res
+  .cookie('access_token', token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'Strict',
+  })
+  .status(200)
+  .json({ user: userData, token });
+
   } catch (error) {
     next(error);
   }

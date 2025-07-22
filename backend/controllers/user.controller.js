@@ -3,6 +3,7 @@ import bcryptjs from 'bcryptjs';
 import mongoose from 'mongoose';
 import validator from 'validator';
 import User from '../models/user.model.js';
+import { sendEmail } from '../utils/sendEmail.js';
 import { errorHandler } from '../utils/error.js';
 import { sanitizeString, sanitizeUsername } from '../utils/sanitize.js';
 import sanitize from 'mongo-sanitize'; // <-- imported mongo-sanitize
@@ -22,11 +23,234 @@ export const test = (req, res) => {
   res.json({ message: 'API is working!' });
 };
 
+export const requestEmailChange = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    let { email } = req.body;
+
+    email = sanitizeString(email);
+
+    if (!validateObjectId(userId)) {
+      return next(errorHandler(400, 'Invalid user ID'));
+    }
+
+    if (!isEmail(email)) {
+      return next(errorHandler(400, 'Invalid email format'));
+    }
+
+    const newEmailLower = email.toLowerCase();
+
+    // Check if email is already in use by another user
+    const existingUser = await User.findOne({ email: newEmailLower });
+    if (existingUser) {
+      return next(errorHandler(400, 'Email is already in use'));
+    }
+
+    const user = await User.findById(userId).select('+email +emailChangeOTP +emailChangeOTPExpiry +emailChangeNewEmail');
+    if (!user) {
+      return next(errorHandler(404, 'User not found'));
+    }
+
+    if (newEmailLower === user.email.toLowerCase()) {
+      return next(errorHandler(400, 'New email is the same as current email'));
+    }
+
+    // Generate 6-digit OTP
+    const otp = (Math.floor(100000 + Math.random() * 900000)).toString();
+    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 min expiry
+
+    user.emailChangeOTP = otp;
+    user.emailChangeOTPExpiry = otpExpiry;
+    user.emailChangeNewEmail = newEmailLower;
+
+    await user.save();
+
+    // Notify current email about change request
+    await sendEmail(
+      user.email,
+      'Email Change Requested',
+      `
+        <p>Hello ${user.username},</p>
+        <p>We received a request to change the email on your account to <strong>${newEmailLower}</strong>.</p>
+        <p>If you did not request this change, please contact support immediately.</p>
+        <br/>
+        <p>Regards,<br/>RatoFlag Security Team</p>
+      `
+    );
+
+    // Send OTP to new email for confirmation
+    await sendEmail(
+      newEmailLower,
+      'Confirm Your New Email',
+      `
+        <p>Hello,</p>
+        <p>Please use the following OTP to confirm your new email address:</p>
+        <h2>${otp}</h2>
+        <p>This code expires in 10 minutes.</p>
+        <br/>
+        <p>Regards,<br/>RatoFlag Security Team</p>
+      `
+    );
+
+    return res.status(200).json({
+      message: 'Verification OTP sent to new email. Please confirm to complete the update.',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
+// export const requestEmailChange = async (req, res, next) => {
+//   try {
+//     const { userId } = req.params;
+//     let { email } = req.body;
+
+//     email = sanitizeString(email);
+
+//     if (!validateObjectId(userId)) {
+//       return next(errorHandler(400, 'Invalid user ID'));
+//     }
+
+//     if (!isEmail(email)) {
+//       return next(errorHandler(400, 'Invalid email format'));
+//     }
+
+//     const user = await User.findById(userId).select('+email +emailChangeOTP +emailChangeOTPExpiry +emailChangeNewEmail');
+//     if (!user) {
+//       return next(errorHandler(404, 'User not found'));
+//     }
+
+//     const newEmailLower = email.toLowerCase();
+
+//     if (newEmailLower === user.email.toLowerCase()) {
+//       return next(errorHandler(400, 'New email is the same as current email'));
+//     }
+
+//     // Generate 6-digit OTP
+//     const otp = (Math.floor(100000 + Math.random() * 900000)).toString();
+//     const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 min expiry
+
+//     user.emailChangeOTP = otp;
+//     user.emailChangeOTPExpiry = otpExpiry;
+//     user.emailChangeNewEmail = newEmailLower;
+
+//     await user.save();
+
+//     // Notify current email about change request
+//     await sendEmail(
+//       user.email,
+//       'Email Change Requested',
+//       `
+//         <p>Hello ${user.username},</p>
+//         <p>We received a request to change the email on your account to <strong>${newEmailLower}</strong>.</p>
+//         <p>If you did not request this change, please contact support immediately.</p>
+//         <br/>
+//         <p>Regards,<br/>RatoFlag Security Team</p>
+//       `
+//     );
+
+//     // Send OTP to new email for confirmation
+//     await sendEmail(
+//       newEmailLower,
+//       'Confirm Your New Email',
+//       `
+//         <p>Hello,</p>
+//         <p>Please use the following OTP to confirm your new email address:</p>
+//         <h2>${otp}</h2>
+//         <p>This code expires in 10 minutes.</p>
+//         <br/>
+//         <p>Regards,<br/>RatoFlag Security Team</p>
+//       `
+//     );
+
+//     return res.status(200).json({
+//       message: 'Verification OTP sent to new email. Please confirm to complete the update.',
+//     });
+//   } catch (error) {
+//     next(error);
+//   }
+// };
+
+
+export const confirmEmailChange = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    const { otp } = req.body;
+
+    if (!validateObjectId(userId)) {
+      return next(errorHandler(400, 'Invalid user ID'));
+    }
+
+    if (!otp) {
+      return next(errorHandler(400, 'OTP is required'));
+    }
+
+    const user = await User.findById(userId).select(
+      '+email +emailChangeOTP +emailChangeOTPExpiry +emailChangeNewEmail'
+    );
+
+    if (!user) {
+      return next(errorHandler(404, 'User not found'));
+    }
+
+    if (!user.emailChangeOTP || !user.emailChangeOTPExpiry || !user.emailChangeNewEmail) {
+      return next(errorHandler(400, 'No pending email change request'));
+    }
+
+    if (new Date() > user.emailChangeOTPExpiry) {
+      return next(errorHandler(400, 'OTP expired. Please request email change again.'));
+    }
+
+    if (otp !== user.emailChangeOTP) {
+      return next(errorHandler(400, 'Invalid OTP'));
+    }
+
+    const oldEmail = user.email;
+    user.email = user.emailChangeNewEmail;
+
+    // Clear OTP fields
+    user.emailChangeOTP = undefined;
+    user.emailChangeOTPExpiry = undefined;
+    user.emailChangeNewEmail = undefined;
+
+    await user.save();
+
+    // Confirmation email to new email
+    await sendEmail(
+      user.email,
+      'Email Successfully Changed',
+      `
+      <p>Hello ${user.username},</p>
+      <p>Your email has been successfully updated to this address.</p>
+      <br/>
+      <p>Regards,<br/>RatoFlag Security Team</p>
+      `
+    );
+
+    // Notification to old email
+    await sendEmail(
+      oldEmail,
+      'Your Email Address Was Changed',
+      `
+      <p>Hello ${user.username},</p>
+      <p>Your account email was recently changed from this address to <strong>${user.email}</strong>.</p>
+      <p>If you did not perform this change, please contact support immediately.</p>
+      <br/>
+      <p>Regards,<br/>RatoFlag Security Team</p>
+      `
+    );
+
+    res.status(200).json({ message: 'Email updated successfully.' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
 export const updateUser = async (req, res, next) => {
-  // Sanitize inputs
   req.body = sanitize(req.body);
   req.params = sanitize(req.params);
-  req.query = sanitize(req.query);
 
   if (!validateObjectId(req.params.userId)) {
     return next(errorHandler(400, 'Invalid user ID'));
@@ -37,44 +261,71 @@ export const updateUser = async (req, res, next) => {
   }
 
   try {
-    const updates = {};
+    // Fetch user with password and oldPasswords for reuse checks
     const user = await User.findById(req.params.userId).select('+password +oldPasswords');
     if (!user) {
       return next(errorHandler(404, 'User not found'));
     }
 
-    // ✅ Password update (with reuse prevention)
+    const updates = {};
+
+    /** 🔐 PASSWORD UPDATE */
     if (req.body.password) {
+      const currentPassword = req.body.currentPassword;
+      if (!currentPassword) {
+        return next(errorHandler(400, 'Current password is required to change password'));
+      }
+
+      const isMatch = await bcryptjs.compare(currentPassword, user.password);
+      if (!isMatch) {
+        return next(errorHandler(403, 'Incorrect current password'));
+      }
+
+      // Password strength validation
       const strongPasswordRegex =
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?#&])[A-Za-z\d@$!%*?#&]{8,}$/;
       if (!strongPasswordRegex.test(req.body.password)) {
         return next(
           errorHandler(
             400,
-            'Password must be minimum 8 characters, with uppercase, lowercase, number, and special character'
+            'Password must be at least 8 characters and include uppercase, lowercase, number, and special character'
           )
         );
       }
 
-      // 🔒 Check against old passwords
+      // Prevent reuse: check new password against oldPasswords
       for (const oldHash of user.oldPasswords || []) {
-        const reused = await bcryptjs.compare(req.body.password, oldHash);
-        if (reused) {
+        if (await bcryptjs.compare(req.body.password, oldHash)) {
           return next(errorHandler(400, 'You cannot reuse a recent password.'));
         }
       }
 
-      // 🔐 Hash and update password
+      // Hash new password
       const newHashed = await bcryptjs.hash(req.body.password, 12);
       updates.password = newHashed;
 
-      // ⏳ Track previous passwords and password change time
+      // Update oldPasswords array with current password hash, max 5 stored
       user.oldPasswords = [user.password, ...(user.oldPasswords || [])].slice(0, 5);
       updates.oldPasswords = user.oldPasswords;
+
       updates.passwordChangedAt = new Date();
+
+      // Send confirmation email (optional)
+      await sendEmail(
+        user.email,
+        'Your password has been changed',
+        `
+          <h2>Password Change Confirmation</h2>
+          <p>Hello ${user.username},</p>
+          <p>Your password was successfully changed on ${new Date().toLocaleString()}.</p>
+          <p>If you did not perform this action, please <strong>reset your password immediately</strong> or contact support.</p>
+          <br/>
+          <p>Regards,<br/>RatoFlag Security Team</p>
+        `
+      );
     }
 
-    // 🧼 Username update
+    /** 🧼 USERNAME UPDATE */
     if (req.body.username) {
       const username = sanitizeUsername(req.body.username);
       if (username.length < 7 || username.length > 20) {
@@ -83,15 +334,9 @@ export const updateUser = async (req, res, next) => {
       updates.username = username;
     }
 
-    // 🧼 Email update
-    if (req.body.email) {
-      const email = sanitizeString(req.body.email);
-      if (!isEmail(email)) {
-        return next(errorHandler(400, 'Invalid email format'));
-      }
-      updates.email = email.toLowerCase();
-    }
+    // Do NOT update email here to avoid immediate email change without confirmation
 
+    // Apply all updates atomically (password and username only)
     const updatedUser = await User.findByIdAndUpdate(
       req.params.userId,
       { $set: updates },
@@ -102,16 +347,25 @@ export const updateUser = async (req, res, next) => {
       return next(errorHandler(404, 'User not found'));
     }
 
-    // Clean up sensitive fields before sending back
-    const { password, otp, otpExpires, resetPasswordOTP, resetPasswordOTPExpiry, oldPasswords, ...rest } =
-      updatedUser._doc;
+    // Remove sensitive fields before response
+    const {
+      password,
+      otp,
+      otpExpires,
+      resetPasswordOTP,
+      resetPasswordOTPExpiry,
+      oldPasswords,
+      emailChangeOTP,
+      emailChangeOTPExpiry,
+      emailChangeNewEmail,
+      ...safeUser
+    } = updatedUser._doc;
 
-    res.status(200).json(rest);
+    res.status(200).json(safeUser);
   } catch (error) {
     next(error);
   }
 };
-
 export const deleteUser = async (req, res, next) => {
   // Sanitize inputs
   req.body = sanitize(req.body);

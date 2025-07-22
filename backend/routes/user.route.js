@@ -9,7 +9,9 @@ import {
   signout,
   updateUser,
   updateUserProfilePicture,
-  getUserPublicInfo
+  getUserPublicInfo,
+  requestEmailChange,
+  confirmEmailChange
 } from '../controllers/user.controller.js';
 
 import { checkPasswordExpiry } from '../utils/checkPasswordExpiry.js'; // ✅ NEW
@@ -35,6 +37,8 @@ router.put(
   modifyLimiter,
   updateUser
 );
+router.post('/:userId/request-email-change', requestEmailChange); // start email change
+router.post('/:userId/confirm-email-change', confirmEmailChange); // confirm OTP
 
 // 🔒 DELETE USER — same checks as update
 router.delete(

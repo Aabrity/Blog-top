@@ -74,6 +74,24 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
+    emailChangeOTP: {
+  type: String,
+  select: false,
+},
+emailChangeOTPExpiry: {
+  type: Date,
+  select: false,
+},
+emailChangeNewEmail: {
+  type: String,
+  lowercase: true,
+  trim: true,
+  validate: {
+    validator: validator.isEmail,
+    message: 'Please provide a valid email address',
+  },
+  select: false,
+},
   },
   { timestamps: true }
 );
