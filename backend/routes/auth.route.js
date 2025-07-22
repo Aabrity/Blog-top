@@ -9,7 +9,8 @@ import {
   resetPassword,
   sendContactEmail,
   logout,
-  verifySigninOTP
+  verifySigninOTP, 
+  changeExpiredPassword
 } from '../controllers/auth.controller.js';
 // import svgCaptcha from "svg-captcha";
 
@@ -77,7 +78,7 @@ router.post('/google', signinLimiter, google);
 router.post('/verify-email', validateEmail, verifyEmail);
 router.post('/request-password-reset', validateEmail, resetLimiter, requestPasswordReset);
 router.post('/reset-password', validatePasswordReset, resetLimiter, resetPassword);
-
+router.post("/change-expired-password", changeExpiredPassword);
 // 📩 Contact/Email route with validation
 router.post('/sendEmail', validateContactMessage, emailLimiter, sendContactEmail);
 router.post('/verify-signin-otp', verifySigninOTP);

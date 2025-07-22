@@ -74,24 +74,10 @@ app.use(csrfProtection);
 
 // ===== Provide CSRF token to frontend =====
 
-// app.use((req, res, next) => {
-//   console.log('Session:', req.session);
-//   console.log('Cookies:', req.cookies);
-//   next();
-// });
-
-// app.get('/api/csrf-token', (req, res) => {
-//   try {
-//     res.json({ csrfToken: req.csrfToken() });
-//   } catch (error) {
-//     console.error('CSRF token error:', error);
-//     res.status(500).json({ error: 'Failed to generate CSRF token' });
-//   }
-// });
 app.get('/api/csrf-token', (req, res) => {
   try {
     const token = req.csrfToken();
-    console.log('Generated CSRF token:', token);
+    // console.log('Generated CSRF token:', token);
     res.json({ csrfToken: token });
   } catch (error) {
     console.error('CSRF token error:', error);

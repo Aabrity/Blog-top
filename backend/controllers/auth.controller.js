@@ -72,57 +72,7 @@
 //   }
 // };
 
-// // // ✅ SIGNIN
-// // export const signin = async (req, res, next) => {
-// //   try {
-// //     const safeBody = mongoSanitize(req.body);
-// //     let { email, password } = safeBody;
-
-// //     if (!email || !password)
-// //       return next(errorHandler(400, 'All fields are required'));
-
-// //     email = email.trim().toLowerCase();
-
-// //     const user = await User.findOne({ email }).select('+password');
-// //     if (!user) return next(errorHandler(404, 'User not found'));
-
-// //     if (!user.isVerified) return next(errorHandler(403, 'Verify your email first'));
-
-// //     const isMatch = await bcryptjs.compare(password, user.password);
-// //     if (!isMatch) {
-// //       await logActivity(user._id, 'Failed Login Attempt', { email });
-// //       return next(errorHandler(400, 'Invalid credentials.'));
-// //     }
-
-// //     const token = jwt.sign(
-// //       { id: user._id, isAdmin: user.isAdmin },
-// //       process.env.JWT_SECRET,
-// //       { expiresIn: '2h' }
-// //     );
-
-// //     await logActivity(user._id, 'User Logged In', { email });
-
-// //     const { password: _, ...rest } = user._doc;
-// //     res
-// //       // .status(200)
-// //       // .cookie('access_token', token, {
-// //       //   httpOnly: true,
-// //       //   secure: process.env.NODE_ENV === 'production',
-// //       //   sameSite: 'Strict',
-// //       // })
-// //       // .json(rest);
-// //       res
-// //   .status(200)
-// //   .cookie('access_token', token, {
-// //     httpOnly: true,
-// //     secure: process.env.NODE_ENV === 'production',
-// //     sameSite: 'Strict',
-// //   })
-// //   .json({ user: rest, token }); // ✅ added token here
-// //   } catch (error) {
-// //     next(error);
-// //   }
-// // };
+// // SIGNIN with OTP send
 // export const signin = async (req, res, next) => {
 //   try {
 //     const safeBody = mongoSanitize(req.body);
@@ -169,6 +119,8 @@
 //     next(error);
 //   }
 // };
+
+// // VERIFY SIGNIN OTP
 // export const verifySigninOTP = async (req, res, next) => {
 //   try {
 //     const safeBody = mongoSanitize(req.body);
@@ -211,7 +163,6 @@
 //     next(error);
 //   }
 // };
-
 
 // // ✅ EMAIL VERIFICATION
 // export const verifyEmail = async (req, res, next) => {
@@ -392,22 +343,13 @@
 //     await logActivity(user._id, 'Google OAuth Sign In', { email });
 
 //     res
-//       // .cookie('access_token', token, {
-//       //   httpOnly: true,
-//       //   secure: process.env.NODE_ENV === 'production',
-//       //   sameSite: 'Strict',
-//       // })
-//       // .status(200)
-//       // .json(userData);
-//       res
-//   .cookie('access_token', token, {
-//     httpOnly: true,
-//     secure: process.env.NODE_ENV === 'production',
-//     sameSite: 'Strict',
-//   })
-//   .status(200)
-//   .json({ user: userData, token });
-
+//       .cookie('access_token', token, {
+//         httpOnly: true,
+//         secure: process.env.NODE_ENV === 'production',
+//         sameSite: 'Strict',
+//       })
+//       .status(200)
+//       .json({ user: userData, token });
 //   } catch (error) {
 //     next(error);
 //   }
@@ -445,7 +387,7 @@
 //   } catch (error) {
 //     next(error);
 //   }
-// };import bcryptjs from 'bcryptjs';
+// };
 import bcryptjs from 'bcryptjs';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
@@ -468,6 +410,16 @@ const isPasswordStrong = (password) => {
   const strongPasswordRegex =
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#^()_\-+=])[A-Za-z\d@$!%*?&#^()_\-+=]{8,}$/;
   return strongPasswordRegex.test(password);
+};
+
+// Password expiry set to 90 days (adjust as needed)
+const PASSWORD_EXPIRY_DAYS = 90;
+
+const isPasswordExpired = (passwordChangedAt) => {
+  if (!passwordChangedAt) return false; // or true if you want to force change on missing
+  const expiryDate = new Date(passwordChangedAt);
+  expiryDate.setDate(expiryDate.getDate() + PASSWORD_EXPIRY_DAYS);
+  return expiryDate < new Date();
 };
 
 // ✅ SIGNUP
@@ -519,7 +471,97 @@ export const signup = async (req, res, next) => {
   }
 };
 
-// SIGNIN with OTP send
+// // SIGNIN with password expiry check & OTP send
+// export const signin = async (req, res, next) => {
+//   try {
+//     const safeBody = mongoSanitize(req.body);
+//     let { email, password } = safeBody;
+
+//     if (!email || !password)
+//       return next(errorHandler(400, 'All fields are required'));
+
+//     email = email.trim().toLowerCase();
+
+//     const user = await User.findOne({ email }).select('+password +otp +otpExpires +passwordChangedAt');
+//     if (!user) return next(errorHandler(404, 'User not found'));
+
+//     if (!user.isVerified) return next(errorHandler(403, 'Verify your email first'));
+
+//     const isMatch = await bcryptjs.compare(password, user.password);
+//     if (!isMatch) {
+//       await logActivity(user._id, 'Failed Login Attempt', { email });
+//       return next(errorHandler(400, 'Invalid credentials'));
+//     }
+
+//     // Check password expiry here
+//     if (isPasswordExpired(user.passwordChangedAt)) {
+//       return res.status(403).json({
+//         message: 'Password expired, please change your password.',
+//         passwordExpired: true,
+//         userId: user._id.toString(),
+//       });
+//     }
+
+//     // Send OTP for MFA
+//     const otp = generateOTP();
+//     const otpHashed = hashOTP(otp);
+//     const otpExpires = new Date(Date.now() + 10 * 60 * 1000);
+
+//     user.otp = otpHashed;
+//     user.otpExpires = otpExpires;
+//     await user.save();
+
+//     await sendEmail(
+//       email,
+//       'Your Sign-In OTP',
+//       `<p>Your OTP is <b>${otp}</b>. It expires in 10 minutes.</p>`
+//     );
+
+//     await logActivity(user._id, 'OTP Sent for Signin', { email });
+
+//     res.status(200).json({
+//       message: 'OTP sent to your email.',
+//       userId: user._id,
+//     });
+//   } catch (error) {
+//     next(error);
+//   }
+// };
+// POST /api/auth/change-expired-password
+export const changeExpiredPassword = async (req, res, next) => {
+  try {
+    const { email, oldPassword, newPassword } = req.body;
+
+    if (!email || !oldPassword || !newPassword)
+      return next(errorHandler(400, "All fields are required"));
+
+    const user = await User.findOne({ email }).select("+password");
+    if (!user) return next(errorHandler(404, "User not found"));
+
+    const isOldMatch = await bcryptjs.compare(oldPassword, user.password);
+    if (!isOldMatch)
+      return next(errorHandler(401, "Old password is incorrect"));
+
+    const isReuse = await bcryptjs.compare(newPassword, user.password);
+    if (isReuse)
+      return next(errorHandler(400, "New password cannot be same as old"));
+
+    const hashedNewPassword = await bcryptjs.hash(newPassword, 10);
+    user.password = hashedNewPassword;
+    user.passwordChangedAt = new Date();
+
+    await user.save();
+
+    await logActivity(user._id, "Password changed after expiry", { email });
+
+    res.status(200).json({
+      message: "Password changed successfully. You can now sign in.",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const signin = async (req, res, next) => {
   try {
     const safeBody = mongoSanitize(req.body);
@@ -530,10 +572,13 @@ export const signin = async (req, res, next) => {
 
     email = email.trim().toLowerCase();
 
-    const user = await User.findOne({ email }).select('+password +otp +otpExpires');
+    const user = await User.findOne({ email }).select(
+      '+password +otp +otpExpires +passwordChangedAt'
+    );
     if (!user) return next(errorHandler(404, 'User not found'));
 
-    if (!user.isVerified) return next(errorHandler(403, 'Verify your email first'));
+    if (!user.isVerified)
+      return next(errorHandler(403, 'Verify your email first'));
 
     const isMatch = await bcryptjs.compare(password, user.password);
     if (!isMatch) {
@@ -541,10 +586,25 @@ export const signin = async (req, res, next) => {
       return next(errorHandler(400, 'Invalid credentials'));
     }
 
-    // Send OTP for MFA
+    // ✅ Password Expiry Check — DO NOT send OTP if expired
+    const expiryDays = 90;
+    const expiryTime = expiryDays * 24 * 60 * 60 * 1000;
+    // const expiryTime = 10 * 1000;
+    const passwordExpired =
+      Date.now() - new Date(user.passwordChangedAt).getTime() > expiryTime;
+
+    if (passwordExpired) {
+      return res.status(403).json({
+        message: 'Your password has expired. Please change it to continue.',
+        passwordExpired: true,
+        userId: user._id.toString(),
+      });
+    }
+
+    // ✅ OTP Generation & Send (unchanged)
     const otp = generateOTP();
     const otpHashed = hashOTP(otp);
-    const otpExpires = new Date(Date.now() + 10 * 60 * 1000);
+    const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
     user.otp = otpHashed;
     user.otpExpires = otpExpires;
@@ -566,6 +626,45 @@ export const signin = async (req, res, next) => {
     next(error);
   }
 };
+
+
+// New controller: Change password after expiry enforcement
+// export const changeExpiredPassword = async (req, res, next) => {
+//   try {
+//     const safeBody = mongoSanitize(req.body);
+//     const { userId, newPassword } = safeBody;
+
+//     if (!userId || !newPassword)
+//       return next(errorHandler(400, 'User ID and new password are required'));
+
+//     if (!isPasswordStrong(newPassword))
+//       return next(errorHandler(400, 'Password does not meet complexity requirements'));
+
+//     const user = await User.findById(userId).select('+password +oldPasswords');
+//     if (!user) return next(errorHandler(404, 'User not found'));
+
+//     // Prevent password reuse
+//     for (const oldHashed of user.oldPasswords || []) {
+//       if (await bcryptjs.compare(newPassword, oldHashed)) {
+//         return next(errorHandler(400, 'You cannot reuse a recent password.'));
+//       }
+//     }
+
+//     // Hash and update password and passwordChangedAt
+//     const hashedNewPassword = await bcryptjs.hash(newPassword, 10);
+//     user.oldPasswords = [user.password, ...(user.oldPasswords || [])].slice(0, 5);
+//     user.password = hashedNewPassword;
+//     user.passwordChangedAt = new Date();
+
+//     await user.save();
+
+//     await logActivity(user._id, 'Password Changed After Expiry');
+
+//     res.status(200).json({ success: true, message: 'Password updated successfully' });
+//   } catch (error) {
+//     next(error);
+//   }
+// };
 
 // VERIFY SIGNIN OTP
 export const verifySigninOTP = async (req, res, next) => {
