@@ -18,6 +18,8 @@ import Help from './pages/helpnContact';
 import ContactPage from './pages/contact';
 
 import { Toaster } from 'react-hot-toast'; 
+import SubscriptionSuccess from './pages/success.jsx';
+import SubscriptionFailure from './pages/failure.jsx';
 export default function App() {
   return (
     <BrowserRouter>
@@ -34,6 +36,8 @@ export default function App() {
         <Route path='/search' element={<Search />} />
         <Route element={<PrivateRoute />}>
           <Route path='/dashboard' element={<Dashboard />} />
+          <Route path='/success' element={<SubscriptionSuccess />} />
+          <Route path='/failure' element={<SubscriptionFailure />} />
            <Route path='/createflag' element={<CreateFlag />} />
            <Route path='/update-post/:postId' element={<UpdatePost />} />
         </Route>

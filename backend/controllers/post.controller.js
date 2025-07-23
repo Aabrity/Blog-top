@@ -192,6 +192,29 @@ export const updatePost = async (req, res, next) => {
     const post = await Post.findById(req.params.postId);
     if (!post) return next(errorHandler(404, 'Post not found.'));
 
+      if (!req.user?.id) return next();
+
+    const user = await User.findById(req.user.id).select('subscribed subscriptionExpiresAt');
+    if (!user) return next();
+
+    req.user.subscribed = user.subscribed;
+    req.user.subscriptionExpiresAt = user.subscriptionExpiresAt;
+    const { title, content, category, isAnonymous, images, location, geolocation } = req.body;
+
+const expiryDate = new Date(req.user.subscriptionExpiresAt);
+    // ❗ Check if user is trying to post anonymously
+    if (isAnonymous) {
+      const now = new Date();
+    if (
+  !req.user.subscribed ||
+  !expiryDate ||
+  expiryDate <= now
+) {
+
+        return next(errorHandler(403, 'You must have an active subscription to post anonymously.'));
+      }
+    }
+
     const allowed = [
       'title',
       'content',
