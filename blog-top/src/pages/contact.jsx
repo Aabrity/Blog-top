@@ -16,7 +16,7 @@ export default function ContactPage() {
         base: "block w-full border disabled:cursor-not-allowed disabled:opacity-50",
         colors: {
           gray:
-            "bg-white border-red-400 text-black focus:border-red-500 focus:ring-red-500 dark:bg-gray-700 dark:border-red-600 dark:text-white",
+            "bg-white border-green-400 text-black focus:border-green-500 focus:ring-green-500 dark:bg-gray-700 dark:border-green-600 dark:text-white",
         },
       },
     },
@@ -24,7 +24,7 @@ export default function ContactPage() {
       base: "block w-full border disabled:cursor-not-allowed disabled:opacity-50",
       colors: {
         gray:
-          "bg-red-50 border-red-400 text-black focus:border-red-500 focus:ring-red-500 dark:bg-gray-700 dark:border-red-600 dark:text-white",
+          "bg-green-50 border-green-400 text-black focus:border-green-500 focus:ring-green-500 dark:bg-gray-700 dark:border-green-600 dark:text-white",
       },
     },
   };
@@ -69,7 +69,7 @@ export default function ContactPage() {
   if (!currentUser) {
     return (
       <div className="max-w-xl mx-auto p-6 text-center">
-        <p className="text-red-600 text-lg font-semibold">
+        <p className="text-green-600 text-lg font-semibold">
           You must be signed in to contact us.
         </p>
       </div>
@@ -77,7 +77,7 @@ export default function ContactPage() {
   }
 
   return (
-    <div className="max-w-xl mx-auto p-6 mt-10 mb-10 border-2 border-red-500 rounded-md shadow-sm bg-white dark:bg-gray-900">
+    <div className="max-w-xl mx-auto p-6 mt-10 mb-10 border-2 border-green-500 rounded-md shadow-sm bg-white dark:bg-gray-900">
       <Toaster position="top-right" />
       <h1 className="text-2xl font-bold mb-6 text-black dark:text-white text-center">
         Contact Admin
@@ -95,7 +95,7 @@ export default function ContactPage() {
             type="email"
             value={currentUser.email}
             disabled
-            className="bg-white border border-red-400 text-black dark:bg-gray-700 dark:border-red-600 dark:text-white"
+            className="bg-white border border-green-400 text-black dark:bg-gray-700 dark:border-green-600 dark:text-white"
           />
         </div>
         <div>
@@ -134,7 +134,7 @@ export default function ContactPage() {
             color="gray"
           />
         </div>
-        <Button color="failure" type="submit" disabled={loading} className="w-full">
+        <Button color="success" type="submit" disabled={loading} className="w-full">
           {loading ? 'Sending...' : 'Send Email'}
         </Button>
       </form>
