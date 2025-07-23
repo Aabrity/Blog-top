@@ -32,28 +32,45 @@ import rateLimit from 'express-rate-limit';
 const router = express.Router();
 
 // 🔐 Per-route rate limiters
-const signupLimiter = rateLimit({
+
+// ✅ Signup Limiter — uses IP only (unauthenticated users)
+export const signupLimiter = rateLimit({
   windowMs: 10 * 60 * 1000, // 10 minutes
   max: 10,
   message: 'Too many signup attempts. Please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => req.ip,
 });
 
-const signinLimiter = rateLimit({
+// ✅ Signin Limiter — must use IP (user not yet logged in)
+export const signinLimiter = rateLimit({
   windowMs: 10 * 60 * 1000,
   max: 5,
   message: 'Too many login attempts. Please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => req.ip, // ❌ DO NOT use req.user
 });
 
-const resetLimiter = rateLimit({
+// ✅ Reset Limiter — use IP; reduce max to prevent abuse
+export const resetLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: 5, // ❌ 100 is way too high, risk of spam/flood
   message: 'Too many password reset requests. Try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => req.ip,
 });
 
-const emailLimiter = rateLimit({
+// ✅ Email Limiter — can use user ID *if* authenticated
+export const emailLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 5,
   message: 'Too many email submissions. Try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => req.user?.id || req.ip, // ✅ fallback to IP
 });
 
 // 🧼 Validate /sendEmail input

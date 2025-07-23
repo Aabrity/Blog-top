@@ -1,7 +1,7 @@
 
 import express from 'express';
 import rateLimit from 'express-rate-limit';
-
+import { authMiddleware } from '../utils/auth.js';
 import {
   deleteUser,
   getUser,
@@ -19,6 +19,7 @@ import { checkPasswordExpiry } from '../utils/checkPasswordExpiry.js'; // ✅ NE
 import { upload } from '../utils/fileUpload.js';
 import { isAdmin, isAdminOrSelf } from '../utils/verifyRoles.js';
 import { verifyToken } from '../utils/verifyUser.js';
+import User from '../models/user.model.js';
 
 const router = express.Router();
 
@@ -38,6 +39,23 @@ router.put(
   modifyLimiter,
   updateUser
 );
+router.get('/subscription-status', verifyToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    const now = new Date();
+    const isActive =
+      user.subscribed &&
+      user.subscriptionExpiresAt &&
+      user.subscriptionExpiresAt > now;
+
+    res.json({ isSubscribed: isActive });
+  } catch (error) {
+    console.error('Subscription status error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
 router.post('/:userId/request-email-change', requestEmailChange); // start email change
 router.post('/:userId/confirm-email-change', confirmEmailChange); // confirm OTP
 
