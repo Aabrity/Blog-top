@@ -1,7 +1,7 @@
 
 import Report from '../models/report.model.js';
 import { errorHandler } from '../utils/error.js';
-import mongoSanitize from 'mongo-sanitize';  // npm install mongo-sanitize
+import mongoSanitize from 'mongo-sanitize';  
 
 // Utility to validate positive integers for pagination
 const validatePositiveInt = (value, defaultValue) => {
@@ -49,9 +49,5 @@ export const getAllReports = async (req, res, next) => {
   }
 };
 
-// export const getLogs = async (req, res, next) => {
-//   if (!req.user?.isAdmin) return res.status(403).json({ error: 'Forbidden' });
-//   const logs = await Log.find().sort({ timestamp: -1 }).limit(100); // assuming logs are in a `Log` model
-//   res.status(200).json(logs);
-// };
+
 

@@ -1,10 +1,11 @@
 
 import { validationResult } from 'express-validator';
-import sanitize from 'mongo-sanitize'; 
+import sanitize from 'mongo-sanitize';
 import sanitizeHtml from 'sanitize-html';
 import Post from '../models/post.model.js';
 import { errorHandler } from '../utils/error.js';
 import { saveBase64Image } from '../utils/fileUpload.js';
+import User from '../models/user.model.js';
 
 /* ------------------------------------------------------------------
    🛠  HELPER FUNCTIONS
@@ -26,20 +27,34 @@ const handleValidation = (req, res, next) => {
   next();
 };
 
-/* ------------------------------------------------------------------
-   📌  CONTROLLERS
--------------------------------------------------------------------*/
+
 export const createPost = async (req, res, next) => {
   try {
     req.body = sanitize(req.body);
     req.params = sanitize(req.params);
     req.query = sanitize(req.query);
+  
+    if (!req.user?.id) return next();
 
+    const user = await User.findById(req.user.id).select('subscribed subscriptionExpiresAt');
+    if (!user) return next();
+
+    req.user.subscribed = user.subscribed;
+    req.user.subscriptionExpiresAt = user.subscriptionExpiresAt;
     const { title, content, category, isAnonymous, images, location, geolocation } = req.body;
 
-    // Check subscription if anonymous posting requested
-    if (isAnonymous && !req.user.subscribed) {
-      return next(errorHandler(403, 'You must be subscribed to post anonymously.'));
+const expiryDate = new Date(req.user.subscriptionExpiresAt);
+    // ❗ Check if user is trying to post anonymously
+    if (isAnonymous) {
+      const now = new Date();
+    if (
+  !req.user.subscribed ||
+  !expiryDate ||
+  expiryDate <= now
+) {
+
+        return next(errorHandler(403, 'You must have an active subscription to post anonymously.'));
+      }
     }
 
     if (!images) {
@@ -48,11 +63,9 @@ export const createPost = async (req, res, next) => {
 
     const slug = buildSlug(title);
 
-    // Check if slug exists
     const exists = await Post.findOne({ slug });
     if (exists) return next(errorHandler(409, 'Slug already in use.'));
 
-    // Save base64 image to file
     const imageUrl = saveBase64Image(images, req.user.id);
 
     const safeContent = sanitizeHtml(content);
@@ -63,8 +76,8 @@ export const createPost = async (req, res, next) => {
       title: safeTitle,
       content: safeContent,
       category,
-      isAnonymous: !!isAnonymous,  // ensure boolean
-      images: imageUrl,             // store URL, not base64
+      isAnonymous: !!isAnonymous,
+      images: imageUrl,
       location: safeLocation,
       geolocation,
       slug,
@@ -78,48 +91,6 @@ export const createPost = async (req, res, next) => {
   }
 };
 
-// export const createPost = async (req, res, next) => {
-//   try {
-//     req.body = sanitize(req.body);
-//     req.params = sanitize(req.params);
-//     req.query = sanitize(req.query);
-
-//     const { title, content, category,isAnonymous, images, location, geolocation } = req.body;
-//     if (!images) {
-//       return next(errorHandler(400, 'Image is required'));
-//     }
-
-//     const slug = buildSlug(title);
-
-//     // Check if slug exists
-//     const exists = await Post.findOne({ slug });
-//     if (exists) return next(errorHandler(409, 'Slug already in use.'));
-
-//     // Save base64 image to file
-//     const imageUrl = saveBase64Image(images, req.user.id);
-
-//     const safeContent = sanitizeHtml(content);
-//     const safeTitle = sanitizeHtml(title.trim());
-//     const safeLocation = location ? sanitizeHtml(location.trim()) : '';
-
-//     const post = new Post({
-//       title: safeTitle,
-//       content: safeContent,
-//       category,
-//       isAnonymous: req.body.isAnonymous || false,
-//       images: imageUrl, // store URL, not base64
-//       location: safeLocation,
-//       geolocation,
-//       slug,
-//       userId: req.user.id,
-//     });
-
-//     const saved = await post.save();
-//     res.status(201).json(saved);
-//   } catch (err) {
-//     next(err);
-//   }
-// };
 
 export const getPosts = async (req, res, next) => {
   try {

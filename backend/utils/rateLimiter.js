@@ -2,11 +2,6 @@
 import rateLimit from 'express-rate-limit';
 
 
-// export const perUserRateLimiter = rateLimit({
-//   windowMs: 60 * 1000, // 1 minute
-//   max: 10, // max 10 per minute
-//   keyGenerator: (req) => req.user?.id || req.ip,
-// });
 
 export const postRateLimiter = rateLimit({
   windowMs: 60 * 1000 * 10, // 10 minute window

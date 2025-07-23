@@ -1,7 +1,7 @@
 
 import express from 'express';
 import rateLimit from 'express-rate-limit';
-import { authMiddleware } from '../utils/auth.js';
+// import { authMiddleware } from '../utils/auth.js';
 import {
   deleteUser,
   getUser,
