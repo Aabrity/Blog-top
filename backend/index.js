@@ -20,7 +20,8 @@ import reportRoutes from './routes/report.route.js';
 import userRoutes from './routes/user.route.js';
 import csrf from 'csurf';
 import session from 'express-session';
-
+// import paymentRoutes from '../routes/payment.routes.js'; 
+import paymentRoutes from "./routes/payment.routes.js"
 dotenv.config();
 
 const __dirname = path.resolve();
@@ -117,13 +118,27 @@ app.use(
     directives: {
       defaultSrc: ["'self'"],
       scriptSrc: ["'self'", "'unsafe-inline'", 'https://apis.google.com'],
-      styleSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+      fontSrc: ["'self'", 'https://fonts.gstatic.com'],
       imgSrc: ["'self'", 'data:', 'https://*'],
       objectSrc: ["'none'"],
       upgradeInsecureRequests: [],
     },
   })
 );
+
+// app.use(
+//   helmet.contentSecurityPolicy({
+//     directives: {
+//       defaultSrc: ["'self'"],
+//       scriptSrc: ["'self'", "'unsafe-inline'", 'https://apis.google.com'],
+//       styleSrc: ["'self'", "'unsafe-inline'"],
+//       imgSrc: ["'self'", 'data:', 'https://*'],
+//       objectSrc: ["'none'"],
+//       upgradeInsecureRequests: [],
+//     },
+//   })
+// );
 
 // Custom security headers
 app.use((req, res, next) => {
@@ -151,6 +166,7 @@ app.use('/api/post', postRoutes);
 app.use('/api/comment', commentRoutes);
 app.use('/api/report', reportRoutes);
 app.use('/api/admin', adminLogsRoute);
+app.use('/api/payment', paymentRoutes);
 
 // ===== Static Files (SPA frontend build) =====
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

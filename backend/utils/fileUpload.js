@@ -34,7 +34,10 @@ export function saveBase64Image(base64String, userId) {
     const data = matches[2];
     const buffer = Buffer.from(data, 'base64');
 
-    const filename = `image_${Date.now()}_${userId}.${ext}`;
+    // const filename = `image_${Date.now()}_${userId}.${ext}`;
+    const safeExt = ext.replace(/[^a-z]/gi, '');
+    const filename = `user-${userId}-${Date.now()}.${safeExt}`;
+
     const filePath = path.join( 'uploads', filename);
 
     // Ensure folder exists, write file synchronously or async await

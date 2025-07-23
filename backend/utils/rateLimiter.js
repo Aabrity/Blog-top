@@ -1,9 +1,17 @@
 // rateLimiter.js
 import rateLimit from 'express-rate-limit';
 
+
+// export const perUserRateLimiter = rateLimit({
+//   windowMs: 60 * 1000, // 1 minute
+//   max: 10, // max 10 per minute
+//   keyGenerator: (req) => req.user?.id || req.ip,
+// });
+
 export const postRateLimiter = rateLimit({
-  windowMs: 60 * 1000 * 10, // 1 minute window
+  windowMs: 60 * 1000 * 10, // 10 minute window
   max: 10, // limit each IP to 10 requests per windowMs
+  keyGenerator: (req) => req.user?.id || req.ip,
   message: 'Too many requests from this IP, please try again after a minute',
   standardHeaders: true,
   legacyHeaders: false,
@@ -12,6 +20,7 @@ export const postRateLimiter = rateLimit({
 export const commentLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
   max: 5, // max 5 comments or likes per minute
+  keyGenerator: (req) => req.user?.id || req.ip,
   message: 'Too many actions, please slow down.',
   standardHeaders: true,
   legacyHeaders: false,
@@ -20,6 +29,7 @@ export const commentLimiter = rateLimit({
 export const reportLimiter = rateLimit({
   windowMs: 5 * 60 * 1000, // 5 minutes
   max: 3, // max 3 reports per 5 minutes per user
+  keyGenerator: (req) => req.user?.id || req.ip,
   message: 'Too many reports submitted. Please try again later.',
   standardHeaders: true,
   legacyHeaders: false,

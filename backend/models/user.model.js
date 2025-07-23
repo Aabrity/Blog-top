@@ -92,6 +92,14 @@ emailChangeNewEmail: {
   },
   select: false,
 },
+subscribed: {
+  type: Boolean,
+  default: false,
+},
+subscriptionExpiresAt: {
+  type: Date,
+  default: null,
+},
 
   },
   { timestamps: true }

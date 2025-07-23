@@ -23,7 +23,27 @@ export const test = (req, res) => {
   res.json({ message: 'API is working!' });
 };
 
+export const updateUserSubscription = async (userId, subscriptionDurationDays = 30) => {
+  try {
+    const subscriptionExpiresAt = new Date();
+    subscriptionExpiresAt.setDate(subscriptionExpiresAt.getDate() + subscriptionDurationDays);
 
+    // Update user document
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      {
+        subscribed: true,
+        subscriptionExpiresAt,
+      },
+      { new: true } // return updated doc
+    );
+
+    return updatedUser;
+  } catch (error) {
+    console.error('Error updating subscription:', error);
+    throw error;
+  }
+};
 
 export const requestEmailChange = async (req, res, next) => {
   try {

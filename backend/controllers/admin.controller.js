@@ -49,9 +49,9 @@ export const getAllReports = async (req, res, next) => {
   }
 };
 
-export const getLogs = async (req, res, next) => {
-  if (!req.user?.isAdmin) return res.status(403).json({ error: 'Forbidden' });
-  const logs = await Log.find().sort({ timestamp: -1 }).limit(100); // assuming logs are in a `Log` model
-  res.status(200).json(logs);
-};
+// export const getLogs = async (req, res, next) => {
+//   if (!req.user?.isAdmin) return res.status(403).json({ error: 'Forbidden' });
+//   const logs = await Log.find().sort({ timestamp: -1 }).limit(100); // assuming logs are in a `Log` model
+//   res.status(200).json(logs);
+// };
 

@@ -35,7 +35,13 @@ export const createPost = async (req, res, next) => {
     req.params = sanitize(req.params);
     req.query = sanitize(req.query);
 
-    const { title, content, category,isAnonymous, images, location, geolocation } = req.body;
+    const { title, content, category, isAnonymous, images, location, geolocation } = req.body;
+
+    // Check subscription if anonymous posting requested
+    if (isAnonymous && !req.user.subscribed) {
+      return next(errorHandler(403, 'You must be subscribed to post anonymously.'));
+    }
+
     if (!images) {
       return next(errorHandler(400, 'Image is required'));
     }
@@ -57,8 +63,8 @@ export const createPost = async (req, res, next) => {
       title: safeTitle,
       content: safeContent,
       category,
-      isAnonymous: req.body.isAnonymous || false,
-      images: imageUrl, // store URL, not base64
+      isAnonymous: !!isAnonymous,  // ensure boolean
+      images: imageUrl,             // store URL, not base64
       location: safeLocation,
       geolocation,
       slug,
@@ -71,6 +77,49 @@ export const createPost = async (req, res, next) => {
     next(err);
   }
 };
+
+// export const createPost = async (req, res, next) => {
+//   try {
+//     req.body = sanitize(req.body);
+//     req.params = sanitize(req.params);
+//     req.query = sanitize(req.query);
+
+//     const { title, content, category,isAnonymous, images, location, geolocation } = req.body;
+//     if (!images) {
+//       return next(errorHandler(400, 'Image is required'));
+//     }
+
+//     const slug = buildSlug(title);
+
+//     // Check if slug exists
+//     const exists = await Post.findOne({ slug });
+//     if (exists) return next(errorHandler(409, 'Slug already in use.'));
+
+//     // Save base64 image to file
+//     const imageUrl = saveBase64Image(images, req.user.id);
+
+//     const safeContent = sanitizeHtml(content);
+//     const safeTitle = sanitizeHtml(title.trim());
+//     const safeLocation = location ? sanitizeHtml(location.trim()) : '';
+
+//     const post = new Post({
+//       title: safeTitle,
+//       content: safeContent,
+//       category,
+//       isAnonymous: req.body.isAnonymous || false,
+//       images: imageUrl, // store URL, not base64
+//       location: safeLocation,
+//       geolocation,
+//       slug,
+//       userId: req.user.id,
+//     });
+
+//     const saved = await post.save();
+//     res.status(201).json(saved);
+//   } catch (err) {
+//     next(err);
+//   }
+// };
 
 export const getPosts = async (req, res, next) => {
   try {

@@ -2,6 +2,7 @@
 import jwt from 'jsonwebtoken';
 import User from '../models/user.model.js'; // if doing DB user validation
 import { errorHandler } from './error.js';
+import  Post  from '../models/post.model.js'; // if checking post ownership
 
 /**
  * Verifies JWT in cookies and attaches user data to req object.
