@@ -31,7 +31,7 @@ export const initializeEsewaPayment = async (req, res) => {
         status: 'pending',
       });
       await newOrder.save();
-
+  
       const product_code = process.env.ESEWA_PRODUCT_CODE || 'EPAYTEST';
       const secret_key = process.env.ESEWA_SECRET_KEY || '8gBm/:&EnhH.1/q';
       const success_url = `${process.env.FRONTEND_BASE_URL}/success`;
