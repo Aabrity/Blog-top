@@ -4,7 +4,7 @@
 import { useEffect, useState } from "react";
 import { FaBook, FaFlag, FaGlobe, FaShieldAlt } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import people from "../assets/pinkpeo.png";
+import people from "../assets/axx6h1ac.png";
 import tree from "../assets/tree.png";
 import PostCard from "../components/PostCard";
 
@@ -22,41 +22,33 @@ export default function Home() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
-      {/* Hero Section */}
-      <section className="py-10 md:py-16">
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-center">
-          {/* Left Side Content */}
-          <div className="lg:col-span-2 text-center lg:text-left space-y-4">
-            <h1 className="text-2xl md:text-3xl font-bold dark:text-white">
-              Welcome to BlogTop
-            </h1>
-            <p className="whitespace-pre text-sm md:text-base text-gray-700 dark:text-gray-300">
-              BlogTop is  a platform  where citizens  can  report issues they <br />
-              encounter in  their  locality and ensure  about a solution. From <br />
-              potholes to broken streetlights, garbage dumps to water leaks <br />
-              we connect you with concerned authorities  and empower your <br />
-              voice for safer neighborhoods.
-            </p>
+     {/* Hero Section */}
 
-            <div className="flex justify-center lg:justify-start">
-              <img
-                src={tree}
-                alt="Colorful tree illustration"
-                className="w-40 sm:w-48 md:w-52 lg:w-60 h-auto object-contain ml-24"
-              />
-            </div>
-          </div>
+<section className="py-10 md:py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+    {/* Left side - text */}
+    <div className="text-left">
+      <h1 className="text-3xl font-bold dark:text-white mb-4">
+        Welcome to BlogTop
+      </h1>
+      <p className="text-gray-700 dark:text-gray-300 text-base md:text-lg leading-relaxed">
+        BlogTop is a platform where citizens can report issues they encounter in their locality and ensure a solution. From potholes to broken streetlights, garbage dumps to water leaks   we connect you with concerned authorities and empower your voice for safer neighborhoods.
+      </p>
+    </div>
 
-          {/* Right Side Image */}
-          <div className="lg:col-span-3 flex justify-center">
-            <img
-              src={people}
-              alt="People with flag illustration"
-              className="w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl h-auto rounded-lg"
-            />
-          </div>
-        </div>
-      </section>
+    {/* Right side - image */}
+    <div className="flex justify-center">
+      <img
+        src={people} // or tree if you prefer
+        alt="People with flag illustration"
+        className="w-full max-w-md md:max-w-lg lg:max-w-xl h-auto rounded-lg"
+      />
+    </div>
+  </div>
+</section>
+
+
+
 
       {/* Features Section */}
       <section className="py-10">
@@ -80,7 +72,7 @@ export default function Home() {
             {
               icon: <FaShieldAlt className="text-3xl w-12 h-12 text-gray-800" />,
               title: "User Privacy Controls",
-              desc: "Post anonymously or control location details — your safety first.",
+              desc: "Post anonymously or control location details   your safety first.",
             },
           ].map((feature, index) => (
             <div key={index} className="flex flex-col items-center text-center px-4">

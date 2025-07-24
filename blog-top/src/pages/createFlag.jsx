@@ -8,6 +8,8 @@ import {
   Modal,
 } from 'flowbite-react';
 import { useSelector } from 'react-redux';
+import StripeServicePayment from '../components/StripeServicePayment';
+
 
 import L from 'leaflet';
 import 'leaflet.awesome-markers';
@@ -372,7 +374,7 @@ export default function CreateFlag() {
           <MapContainer
             center={position}
             zoom={13}
-            style={{ height: '300px', width: '100%' }}
+            style={{ height: '300px', width: '100%',  zIndex: 0  }}
           >
             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
             <LocationMarker />
@@ -414,22 +416,29 @@ export default function CreateFlag() {
             You need to subscribe to post anonymously.
           </h3>
 
-          <EsewaServicePayment userId={currentUser?._id} />
+          {/* <EsewaServicePayment userId={currentUser?._id} /> */}
+          <div className="flex flex-col gap-4">
+  <EsewaServicePayment userId={currentUser?._id} />
 
-          <Button
-            onClick={checkSubscriptionAgain}
-            color="success"
-            className="mt-4"
-          >
-            I've completed payment
-          </Button>
-          <Button
-            onClick={() => setShowPaymentModal(false)}
-            color="gray"
-            className="mt-2"
-          >
-            Cancel
-          </Button>
+  <div className="text-center text-sm text-gray-400">or</div>
+
+  <StripeServicePayment userId={currentUser?._id} />
+</div>
+
+<div className="flex justify-between mt-1 mb-4">
+  <Button
+    onClick={checkSubscriptionAgain}
+    color="success"
+  >
+    I've completed payment
+  </Button>
+  <Button
+    onClick={() => setShowPaymentModal(false)}
+    color="failure"
+  >
+    Cancel
+  </Button>
+</div>
         </Modal.Body>
       </Modal>
     </div>

@@ -30,8 +30,8 @@ const customStyles = `
     font-size: 0.875rem !important;
   }
   .flowbite-textinput input:focus {
-    border-color: #ef4444 !important;
-    box-shadow: 0 0 0 1px #ef4444 !important;
+    border-color: #205431ff !important;
+    box-shadow: 0 0 0 1px #205431ff !important;
   }
 `;
 
@@ -371,7 +371,7 @@ export default function DashProfile() {
 
                 {/* EMAIL CHANGE UI */}
                 {emailChangeStep === 0 && (
-                  <Button size="sm" onClick={requestEmailChange} disabled={!newEmail}>
+                  <Button  className="mt-2 bg-green-600 hover:bg-green-700 text-white" size="sm" onClick={requestEmailChange} disabled={!newEmail}>
                     Request Email Change
                   </Button>
                 )}
@@ -390,7 +390,7 @@ export default function DashProfile() {
                       size="sm"
                       onClick={confirmEmailChange}
                       disabled={emailOtp.length !== 6}
-                      className="mt-2"
+                       className="mt-2 bg-green-600 hover:bg-green-700 text-white"
                     >
                       Confirm Email Change
                     </Button>
