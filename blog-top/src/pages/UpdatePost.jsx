@@ -19,7 +19,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import greenflag from '../assets/pin.png';
 import redflag from '../assets/red-flag.png';
 import EsewaServicePayment from '../components/payment'; // Your payment component
-
+import StripeServicePayment from '../components/StripeServicePayment'; // Your payment component
 const redFlagIcon = new L.Icon({
   iconUrl: redflag,
   iconSize: [32, 32],
@@ -403,11 +403,34 @@ export default function UpdatePost() {
       >
         <Modal.Header />
         <Modal.Body>
-          <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
+          <h3 className="mb-5 text-lg font-normal text-black-500 dark:text-black-400">
             You need to subscribe to post anonymously.
           </h3>
 
-          <EsewaServicePayment userId={currentUser?._id} />
+               <div className="flex flex-col gap-4">
+  <EsewaServicePayment userId={currentUser?._id} />
+
+  <div className="text-center text-sm text-gray-400">or</div>
+
+  <StripeServicePayment userId={currentUser?._id} />
+</div>
+
+<div className="flex justify-between mt-1 mb-4">
+  <Button
+    onClick={checkSubscriptionAgain}
+    color="success"
+  >
+    I've completed payment
+  </Button>
+  <Button
+    onClick={() => setShowPaymentModal(false)}
+    color="failure"
+  >
+    Cancel
+  </Button>
+</div>
+
+          {/* <EsewaServicePayment userId={currentUser?._id} />
 
           <Button onClick={checkSubscriptionAgain} color="success" className="mt-4">
             I've completed payment
@@ -418,7 +441,7 @@ export default function UpdatePost() {
             className="mt-2"
           >
             Cancel
-          </Button>
+          </Button> */}
         </Modal.Body>
       </Modal>
     </div>

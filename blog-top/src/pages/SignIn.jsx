@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import comunity from "../assets/comunity.png";
+import comunity from "../assets/n7na92vn.png";
 import OAuth from "../components/OAuth";
 import {
   resetLoading,
@@ -322,7 +322,7 @@ export default function SignIn() {
   return (
     <div className="min-h-screen mt-10 px-4">
       <div className="flex flex-col md:flex-row max-w-6xl mx-auto gap-8 items-start">
-        <div className="w-full md:w-5/7 relative">
+        <div className="w-full md:w-5/7 mt-1 relative">
           <div className="bg-white rounded-lg p-2 z-0 relative">
             <img
               src={comunity || "/placeholder.svg"}
@@ -330,15 +330,15 @@ export default function SignIn() {
               className="w-full h-auto object-cover rounded-lg mb-0"
             />
             <div className="bg-offwhite rounded-lg shadow-md p-4 -mt-10 relative z-10 ">
-              <p className="text-xsm text-gray-600 space-y-3">
+              <p className="text-xsm text-black-600 space-y-3">
                 Welcome back to BlogTop! Sign in to report alerts, help your community,
-                or catch up on important local posts. Stay informed and connected with just a few clicks!
+                
               </p>
             </div>
           </div>
         </div>
 
-        <div className="w-full mt-12 md:w-1/2">
+        <div className="w-full mt-2 md:w-1/2">
 
           {/* PASSWORD EXPIRED RESET FORM */}
           {passwordExpiredStep === 1 && (

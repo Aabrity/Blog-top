@@ -412,7 +412,7 @@ export default function CreateFlag() {
       >
         <Modal.Header />
         <Modal.Body>
-          <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
+          <h3 className="mb-5 text-lg font-normal text-black-500 dark:text-gray-400">
             You need to subscribe to post anonymously.
           </h3>
 

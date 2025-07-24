@@ -51,7 +51,7 @@ export default function Home() {
 
 
       {/* Features Section */}
-      <section className="py-10">
+      {/* <section className="py-10">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {[
             {
@@ -84,12 +84,12 @@ export default function Home() {
             </div>
           ))}
         </div>
-      </section>
+      </section> */}
 
       {/* Help Section */}
       <section className="py-6 flex justify-center">
         <div className="text-center mt-8">
-          <Link to="/help" className="text-green-600 font-medium hover:underline">
+          <Link to="/help" className="text-green-600 text-l font-bold hover:underline">
             Help and Contact
           </Link>
         </div>

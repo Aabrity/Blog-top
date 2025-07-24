@@ -132,7 +132,7 @@ export default function Header() {
 
       <div className="flex gap-2 md:order-2">
         {/* Theme toggle button with green ring on focus/hover */}
-        <Button
+        {/* <Button
           className="w-12 h-10 hidden sm:inline focus:ring-green-500 hover:ring-green-500 focus:ring-2 focus:outline-none"
           color="gray"
           pill
@@ -140,7 +140,7 @@ export default function Header() {
           aria-label="Toggle theme"
         >
           {theme === 'light' ? <FaSun /> : <FaMoon />}
-        </Button>
+        </Button> */}
 
         {currentUser ? (
           <Dropdown
@@ -173,8 +173,8 @@ export default function Header() {
         {[
           { path: '/', label: 'Home' },
           { path: '/about', label: 'About' },
-          { path: '/flags', label: 'Flags' },
-          { path: '/createflag', label: 'Raise Flags' },
+      
+          { path: '/createflag', label: 'Create Post' },
         ].map((item) => (
           <div key={item.path}>
             <Link

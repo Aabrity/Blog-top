@@ -1,10 +1,10 @@
 
 import { Button, Spinner, TextInput } from "flowbite-react";
-import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import OAuth from "../components/OAuth";
-import comunity from "../assets/comunity.png";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { Link, useNavigate } from "react-router-dom";
+import comunity from "../assets/n7na92vn.png";
+import OAuth from "../components/OAuth";
 
 export default function SignUp() {
   // Password strength calculator
@@ -205,7 +205,7 @@ export default function SignUp() {
     <div className="min-h-screen mt-10 px-4">
       <div className="flex flex-col md:flex-row max-w-6xl mx-auto gap-8 items-start">
         {/* Left Side */}
-        <div className="w-full md:w-5/7 relative">
+        <div className="w-full md:w-5/7 h-full mt-14 relative">
           <div className="bg-white rounded-lg p-2 z-0 relative">
             <img
               src={comunity || "/placeholder.svg"}
@@ -213,15 +213,16 @@ export default function SignUp() {
               className="w-full h-auto object-cover rounded-lg mb-0"
             />
             <div className="bg-offwhite rounded-lg shadow-md p-4 -mt-10 relative z-10">
-              <p className="text-xsm text-gray-600 space-y-3">
-                BlogTop is like a big neighborhood notice board with a map...
+              <p className="text-xsm text-black-600 space-y-3">
+                BlogTop is like a big neighborhood notice board with a map. It’s a place where anyone in the community can pin their thoughts, announcements, or reports whether it’s a lost pet, a local event, a safety concern, or just a personal storyonto a shared, interactive map.
+
               </p>
             </div>
           </div>
         </div>
 
         {/* Right Side */}
-        <div className="w-full mt-12 md:w-1/2">
+        <div className="w-full mt-1 md:w-1/2">
           <h1 className="text-center text-2xl font-bold mb-7">
             {step === "signup" ? "SIGN UP" : "VERIFY YOUR EMAIL"}
           </h1>
