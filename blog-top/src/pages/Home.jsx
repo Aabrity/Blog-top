@@ -47,46 +47,6 @@ export default function Home() {
   </div>
 </section>
 
-
-
-
-      {/* Features Section */}
-      {/* <section className="py-10">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {[
-            {
-              icon: <FaFlag className="text-3xl w-12 h-12 text-gray-800" />,
-              title: "Incident Reporting",
-              desc: "Your input helps alert others and keep the community informed.",
-            },
-            {
-              icon: <FaBook className="text-3xl w-12 h-12 text-gray-800" />,
-              title: "Community Blog Posts",
-              desc: "See where incidents are happening and stay aware of danger zones.",
-            },
-            {
-              icon: <FaGlobe className="text-3xl w-12 h-12 text-gray-800" />,
-              title: "Location Specific Awareness",
-              desc: "Share updates or safety tips with others through blog-style posts.",
-            },
-            {
-              icon: <FaShieldAlt className="text-3xl w-12 h-12 text-gray-800" />,
-              title: "User Privacy Controls",
-              desc: "Post anonymously or control location details   your safety first.",
-            },
-          ].map((feature, index) => (
-            <div key={index} className="flex flex-col items-center text-center px-4">
-              <div className="bg-white p-4 rounded-full mb-4 shadow-md">
-                {feature.icon}
-              </div>
-              <h3 className="font-semibold mb-2 dark:text-white">{feature.title}</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-300">{feature.desc}</p>
-            </div>
-          ))}
-        </div>
-      </section> */}
-
-      {/* Help Section */}
       <section className="py-6 flex justify-center">
         <div className="text-center mt-8">
           <Link to="/help" className="text-green-600 text-l font-bold hover:underline">
