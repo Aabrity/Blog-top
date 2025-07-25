@@ -1,12 +1,3 @@
-# React + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+BLOGTOP_SECURITY
+A deliberate focus was placed on developing BlogTop with security integrated from the earliest stages. Secure-by-design practices helped identify and address potential vulnerabilities before deployment. Sensitive configurations, such as password complexity rules and CSRF tokens, were managed securely through environment files. Multi-factor authentication and input sanitization were implemented to reduce unauthorized access and prevent injection-based attacks. Clear separation between administrative and user areas, backed by role-based access control, minimized privilege escalation risks. Robust logging and secure session handling ensured user authenticity and session integrity, while encrypted storage protected critical data confidentiality. Deployment included HTTPS, secure configuration hardening, and removal of unused or exposed source files to reduce the attack surface. Planned improvements include adding OAuth for identity management, implementing centralized logging, and introducing real-time monitoring for enhanced security and scalability.
