@@ -1,19 +1,36 @@
-import { Modal, Table, Button } from 'flowbite-react';
+import { Button, Modal, Table } from 'flowbite-react';
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { HiOutlineExclamationCircle } from 'react-icons/hi';
 import { FaCheck, FaTimes } from 'react-icons/fa';
+import { HiOutlineExclamationCircle } from 'react-icons/hi';
+import { useSelector } from 'react-redux';
 
 export default function DashUsers() {
   const { currentUser } = useSelector((state) => state.user);
   const [users, setUsers] = useState([]);
   const [showMore, setShowMore] = useState(true);
   const [showModal, setShowModal] = useState(false);
+    const [csrfToken, setCsrfToken] = useState('');
   const [userIdToDelete, setUserIdToDelete] = useState('');
   useEffect(() => {
+        const fetchCsrfToken = async () => {
+      try {
+        const res = await fetch('/api/csrf-token', {
+          credentials: 'include',
+        });
+        const data = await res.json();
+        setCsrfToken(data.csrfToken);
+      } catch (error) {
+        console.error('Failed to fetch CSRF token', error);
+      }
+    };
+    fetchCsrfToken();
+  
     const fetchUsers = async () => {
       try {
-        const res = await fetch(`/api/user/getusers`);
+        const res = await fetch(`/api/user/getusers`,{
+          headers: { 'CSRF-Token': csrfToken },
+          credentials: 'include',
+        });
         const data = await res.json();
         if (res.ok) {
           setUsers(data.users);
@@ -22,7 +39,7 @@ export default function DashUsers() {
           }
         }
       } catch (error) {
-        console.log(error.message);
+        //console.log(error.message);
       }
     };
     if (currentUser.isAdmin) {
@@ -33,7 +50,10 @@ export default function DashUsers() {
   const handleShowMore = async () => {
     const startIndex = users.length;
     try {
-      const res = await fetch(`/api/user/getusers?startIndex=${startIndex}`);
+      const res = await fetch(`/api/user/getusers?startIndex=${startIndex}`, {
+        headers: { 'CSRF-Token': csrfToken },
+        credentials: 'include',
+      });
       const data = await res.json();
       if (res.ok) {
         setUsers((prev) => [...prev, ...data.users]);
@@ -42,7 +62,7 @@ export default function DashUsers() {
         }
       }
     } catch (error) {
-      console.log(error.message);
+      //console.log(error.message);
     }
   };
 
@@ -50,16 +70,18 @@ export default function DashUsers() {
     try {
         const res = await fetch(`/api/user/delete/${userIdToDelete}`, {
             method: 'DELETE',
+            headers: { 'CSRF-Token': csrfToken },
+        credentials: 'include',
         });
         const data = await res.json();
         if (res.ok) {
             setUsers((prev) => prev.filter((user) => user._id !== userIdToDelete));
             setShowModal(false);
         } else {
-            console.log(data.message);
+            //console.log(data.message);
         }
     } catch (error) {
-        console.log(error.message);
+        //console.log(error.message);
     }
   };
 
@@ -84,7 +106,7 @@ export default function DashUsers() {
                   </Table.Cell>
                   <Table.Cell>
                     <img
-                      src={user.profilePicture}
+                      src={`/uploads/${user.profilePicture}`}
                       alt={user.username}
                       className='w-10 h-10 object-cover bg-gray-500 rounded-full'
                     />

@@ -2,12 +2,10 @@
 import { Avatar, Button, Dropdown, Navbar, TextInput } from 'flowbite-react';
 import { useEffect, useState } from 'react';
 import { AiOutlineSearch } from 'react-icons/ai';
-import { FaMoon, FaSun } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import logoLight from '../assets/logo/logo.png';
 import logoDark from '../assets/logo/logow.png';
-import { toggleTheme } from '../redux/theme/themeSlice';
 import { signoutSuccess } from '../redux/user/userSlice';
 
 export default function Header() {
@@ -50,12 +48,12 @@ export default function Header() {
       });
       const data = await res.json();
       if (!res.ok) {
-        console.log(data.message);
+        //console.log(data.message);
       } else {
         dispatch(signoutSuccess());
       }
     } catch (error) {
-      console.log(error.message);
+      //console.log(error.message);
     }
   };
 

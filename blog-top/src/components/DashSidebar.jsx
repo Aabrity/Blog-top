@@ -4,14 +4,14 @@
 import { Sidebar } from "flowbite-react"
 import { useEffect, useState } from "react"
 import {
-  HiAnnotation,
-  HiArrowSmRight,
-  HiChartPie,
-  HiDocumentText,
-  HiExclamation,
-  HiFlag,
-  HiOutlineUserGroup,
-  HiUser,
+    HiAnnotation,
+    HiArrowSmRight,
+    HiChartPie,
+    HiDocumentText,
+    HiExclamation,
+    HiFlag,
+    HiOutlineUserGroup,
+    HiUser,
 } from "react-icons/hi"
 import { useDispatch, useSelector } from "react-redux"
 import { Link, useLocation } from "react-router-dom"
@@ -40,12 +40,12 @@ export default function DashSidebar() {
   //     })
   //     const data = await res.json()
   //     if (!res.ok) {
-  //       console.log(data.message)
+  //       //console.log(data.message)
   //     } else {
   //       dispatch(signoutSuccess())
   //     }
   //   } catch (error) {
-  //     console.log(error.message)
+  //     //console.log(error.message)
   //   }
   // }
 const handleSignout = async () => {
@@ -61,13 +61,13 @@ const handleSignout = async () => {
     });
     const data = await res.json();
     if (!res.ok) {
-      console.log(data.message);
+      //console.log(data.message);
     } else {
       dispatch(signoutSuccess());
       // Optionally redirect or update UI here
     }
   } catch (error) {
-    console.log(error.message);
+    //console.log(error.message);
   }
 };
  const fetchCSRFToken = async () => {

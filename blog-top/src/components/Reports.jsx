@@ -22,7 +22,7 @@
 //           }
 //         }
 //       } catch (error) {
-//         console.log(error.message);
+//         //console.log(error.message);
 //       }
 //     };
 //     if (currentUser?.isAdmin) {
@@ -44,7 +44,7 @@
 //         }
 //       }
 //     } catch (error) {
-//       console.log(error.message);
+//       //console.log(error.message);
 //     }
 //   };
 
@@ -60,10 +60,10 @@
 //           prev.filter((report) => report._id !== reportIdToDelete)
 //         );
 //       } else {
-//         console.log(data.message);
+//         //console.log(data.message);
 //       }
 //     } catch (error) {
-//       console.log(error.message);
+//       //console.log(error.message);
 //     }
 //   };
 
@@ -147,10 +147,10 @@
 //     </div>
 //   );
 // }
-import { Modal, Table, Button } from 'flowbite-react';
+import { Button, Modal, Table } from 'flowbite-react';
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { HiOutlineExclamationCircle } from 'react-icons/hi';
+import { useSelector } from 'react-redux';
 
 export default function DashReports() {
   const { currentUser } = useSelector((state) => state.user);
@@ -177,25 +177,49 @@ export default function DashReports() {
   }, []);
 
   // Fetch reports
-  useEffect(() => {
-    const fetchReports = async () => {
-      try {
-        const res = await fetch(`/api/auth/admin/reports`);
-        const data = await res.json();
-        if (res.ok) {
-          setReports(data);
-          if (data.length < 9) {
-            setShowMore(false);
-          }
+  // useEffect(() => {
+  //   const fetchReports = async () => {
+  //     try {
+  //       const res = await fetch(`/api/admin/reports`, {  headers: { "CSRF-Token": csrfToken },
+  //       credentials: "include",});
+  //       const data = await res.json();
+  //       if (res.ok) {
+  //         setReports(data);
+  //         if (data.length < 9) {
+  //           setShowMore(false);
+  //         }
+  //       }
+  //     } catch (error) {
+  //       //console.log(error.message);
+  //     }
+  //   };
+  //   if (currentUser?.isAdmin) {
+  //     fetchReports();
+  //   }
+  // }, [currentUser?._id]);
+useEffect(() => {
+  const fetchReports = async () => {
+    try {
+      const res = await fetch(`/api/admin/reports`, {
+        headers: { "CSRF-Token": csrfToken },
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setReports(data.reports);
+        if (data.reports.length < 9) {
+          setShowMore(false);
         }
-      } catch (error) {
-        console.log(error.message);
       }
-    };
-    if (currentUser?.isAdmin) {
-      fetchReports();
+    } catch (error) {
+      //console.log(error.message);
     }
-  }, [currentUser?._id]);
+  };
+
+  if (currentUser?.isAdmin && csrfToken) {
+    fetchReports();
+  }
+}, [currentUser?.isAdmin, csrfToken]);
 
   const handleShowMore = async () => {
     const startIndex = reports.length;
@@ -211,7 +235,7 @@ export default function DashReports() {
         }
       }
     } catch (error) {
-      console.log(error.message);
+      //console.log(error.message);
     }
   };
 
@@ -231,10 +255,10 @@ export default function DashReports() {
           prev.filter((report) => report._id !== reportIdToDelete)
         );
       } else {
-        console.log(data.message);
+        //console.log(data.message);
       }
     } catch (error) {
-      console.log(error.message);
+      //console.log(error.message);
     }
   };
 

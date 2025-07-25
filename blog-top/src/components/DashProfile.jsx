@@ -10,13 +10,13 @@ import { toast, Toaster } from "react-hot-toast";
 import { HiCamera, HiLockClosed, HiMail, HiUser } from "react-icons/hi";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  deleteUserFailure,
-  deleteUserStart,
-  deleteUserSuccess,
-  signoutSuccess,
-  updateFailure,
-  updateStart,
-  updateSuccess,
+    deleteUserFailure,
+    deleteUserStart,
+    deleteUserSuccess,
+    signoutSuccess,
+    updateFailure,
+    updateStart,
+    updateSuccess,
 } from "../redux/user/userSlice";
 
 const customStyles = `
@@ -51,7 +51,7 @@ export default function DashProfile() {
   const [csrfToken, setCsrfToken] = useState("");
 
   // EMAIL CHANGE STATES
-  const [emailChangeStep, setEmailChangeStep] = useState(0); // 0=idle,1=requestSent,2=confirmed
+  const [emailChangeStep, setEmailChangeStep] = useState(0); 
   const [newEmail, setNewEmail] = useState("");
   const [emailOtp, setEmailOtp] = useState("");
 
@@ -77,6 +77,7 @@ export default function DashProfile() {
       const res = await fetch(`/api/user/profile-picture/${currentUser._id}`, {
         method: "PUT",
         body: formData,
+         headers: { "CSRF-Token": csrfToken },
         credentials: "include",
       });
 
@@ -208,12 +209,12 @@ export default function DashProfile() {
       const data = await res.json();
 
       if (!res.ok) {
-        console.log(data.message);
+        //console.log(data.message);
       } else {
         dispatch(signoutSuccess());
       }
     } catch (error) {
-      console.log(error.message);
+      //console.log(error.message);
     }
   };
 
