@@ -6,10 +6,10 @@ import path from 'path';
 
 export default defineConfig({
     server: {
-    // https: {
-    //   // key: fs.readFileSync(path.resolve(__dirname, '../localhost-key.pem')),
-    //   // cert: fs.readFileSync(path.resolve(__dirname, '../localhost-cert.pem')),
-    // },
+    https: {
+      key: fs.readFileSync(path.resolve(__dirname, '../localhost-key.pem')),
+      cert: fs.readFileSync(path.resolve(__dirname, '../localhost-cert.pem')),
+    },
     port: 5173,
     proxy: {
       '/api': {

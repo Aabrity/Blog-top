@@ -130,7 +130,7 @@ export default function DashboardComp() {
                 <Table.Row className="bg-white dark:bg-gray-800">
                   <Table.Cell>
                     <img
-                      src={u.profilePicture}
+                      src={`/uploads/${u.profilePicture}` || '/placeholder.jpg'}
                       alt={u.username}
                       className="w-10 h-10 rounded-full object-cover"
                     />
@@ -187,7 +187,7 @@ export default function DashboardComp() {
                 <Table.Row className="bg-white dark:bg-gray-800">
                   <Table.Cell>
                     <img
-                      src={p.image}
+                    src={`/uploads/${p.images}`}
                       alt={p.title}
                       className="w-14 h-10 rounded-md object-cover"
                     />
