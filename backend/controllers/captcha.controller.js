@@ -1,19 +1,7 @@
 import svgCaptcha from 'svg-captcha';
 import { signup } from './auth.controller.js';
 
-// export const getCaptcha = (req, res) => {
-//   const captcha = svgCaptcha.create({
-//     size: 5,
-//     noise: 2,
-//     ignoreChars: '0oO1ilI',
-//     color: true,
-//     background: '#f2f2f2',
-//   });
 
-//   req.session.captcha = captcha.text; // Store for later verification
-//   res.type('svg');
-//   res.status(200).send(captcha.data);
-// };
 
 export const getCaptcha = (req, res) => {
   const captcha = svgCaptcha.create({
