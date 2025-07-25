@@ -3,9 +3,9 @@ import {
   Button,
   Checkbox,
   FileInput,
+  Modal,
   Select,
   TextInput,
-  Modal,
 } from 'flowbite-react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -87,7 +87,7 @@ export default function UpdatePost() {
         }
         setLoading(false);
       } catch (err) {
-        console.log(err.message);
+        //console.log(err.message);
         setPublishError('Failed to fetch post data.');
         toast.error('Failed to fetch post data.');
         setLoading(false);

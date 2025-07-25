@@ -116,7 +116,7 @@ export default function SignIn() {
 
         toast.error(data.message || "Sign-in failed");
         fetchCaptcha();
-        dispatch(signInFailure(data.message)); // <-- Stop loading & set error
+        dispatch(signInFailure(data.message)); 
         return;
       }
 
@@ -124,13 +124,13 @@ export default function SignIn() {
       setUserId(data.userId);
       setSigninStep(1);
 
-      dispatch(signInSuccess(data.user)); // <-- Stop loading & set user
+      dispatch(signInSuccess(data.user));
     } catch (error) {
       const msg =
         error.response?.data?.message ||
         "Your account has been locked out due to too many failed attempts. Please try again 10 minutes later.";
       toast.error(msg);
-      dispatch(signInFailure(msg)); // <-- Stop loading & set error
+      dispatch(signInFailure(msg)); 
     }
   };
 

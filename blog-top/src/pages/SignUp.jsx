@@ -33,7 +33,7 @@ export default function SignUp() {
       <div>
         <div
           style={{
-            height: "3px",               // smaller height
+            height: "3px",               
             width: `${(strength / 6) * 100}%`,
             backgroundColor: colors[normalizedStrength],
             transition: "width 0.3s ease-in-out",
@@ -44,8 +44,8 @@ export default function SignUp() {
           style={{
             color: colors[normalizedStrength],
             fontWeight: "600",
-            fontSize: "0.75rem",       // smaller font
-            marginTop: "1px",          // less margin
+            fontSize: "0.75rem",      
+            marginTop: "1px",        
             marginBottom: 0,
             lineHeight: 1,
           }}

@@ -12,7 +12,7 @@
 // //     if (!encodedData) return;
 
 // //     const decoded = JSON.parse(atob(encodedData));
-// //     console.log("Esewa success data:", decoded);
+// //     //console.log("Esewa success data:", decoded);
 
 // //     if (decoded.status === "COMPLETE") {
 // //       // ✅ Fetch CSRF token first
@@ -36,7 +36,7 @@
 // //           });
 // //         })
 // //         .then((res) => res.json())
-// //         .then((data) => console.log("Subscription updated:", data))
+// //         .then((data) => //console.log("Subscription updated:", data))
 // //         .catch((err) =>
 // //           console.error("Subscription confirm error (CSRF)", err)
 // //         );
@@ -64,7 +64,7 @@
 //     // ✅ For eSewa
 //     if (encodedData) {
 //       const decoded = JSON.parse(atob(encodedData));
-//       console.log("Esewa success data:", decoded);
+//       //console.log("Esewa success data:", decoded);
 
 //       if (decoded.status === "COMPLETE") {
 //         fetch("/api/csrf-token", {
@@ -86,7 +86,7 @@
 //             });
 //           })
 //           .then((res) => res.json())
-//           .then((data) => console.log("eSewa subscription updated:", data))
+//           .then((data) => //console.log("eSewa subscription updated:", data))
 //           .catch((err) =>
 //             console.error("eSewa subscription confirm error", err)
 //           );
@@ -95,7 +95,7 @@
 
 //     // ✅ For Stripe
 //     else if (stripeSessionId) {
-//       console.log("Stripe session ID detected:", stripeSessionId);
+//       //console.log("Stripe session ID detected:", stripeSessionId);
 
 //       fetch("/api/csrf-token", {
 //         credentials: "include",
@@ -115,7 +115,7 @@
 //           });
 //         })
 //         .then((res) => res.json())
-//         .then((data) => console.log("Stripe subscription updated:", data))
+//         .then((data) => //console.log("Stripe subscription updated:", data))
 //         .catch((err) =>
 //           console.error("Stripe subscription confirm error", err)
 //         );
@@ -142,7 +142,7 @@ export default function SubscriptionSuccess() {
 
     if (encodedEsewaData) {
       const decoded = JSON.parse(atob(encodedEsewaData));
-      console.log("Esewa success data:", decoded);
+      //console.log("Esewa success data:", decoded);
 
       if (decoded.status === "COMPLETE") {
         fetch("/api/csrf-token", { credentials: "include" })
@@ -168,7 +168,7 @@ export default function SubscriptionSuccess() {
           );
       }
     } else if (stripeSessionId) {
-      console.log("Stripe session ID detected:", stripeSessionId);
+      //console.log("Stripe session ID detected:", stripeSessionId);
 
       fetch("/api/csrf-token", { credentials: "include" })
         .then((res) => res.json())
