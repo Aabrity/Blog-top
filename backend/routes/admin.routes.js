@@ -1,34 +1,4 @@
-// import express from 'express';
-// import fs from 'fs';
-// import path from 'path';
-// import { verifyToken } from '../utils/verifyUser.js';
-// import { isAdmin } from '../utils/verifyRoles.js';
-// import { getAllReports } from '../controllers/admin.controller.js';
 
-// const router = express.Router();
-
-
-// router.get('/logs', verifyToken, async (req, res) => {
-//   if (!req.user?.isAdmin) return res.status(403).json({ error: 'Forbidden' });
-
-//   const logPath = path.join(process.cwd(), 'logs', 'activity.log');
-//   try {
-//     const content = fs.readFileSync(logPath, 'utf-8');
-//     const lines = content.trim().split('\n');
-
-//     const page = parseInt(req.query.page) || 1;
-//     const limit = parseInt(req.query.limit) || 4;
-//     const skip = (page - 1) * limit;
-
-//     const paginated = lines.slice(skip, skip + limit).map(line => JSON.parse(line));
-//     res.status(200).json(paginated);
-//   } catch (err) {
-//     console.error('File read error:', err.message);
-//     res.status(500).json({ error: 'Could not read logs' });
-//   }
-// }); router.get('/reports', verifyToken, isAdmin, getAllReports);
-
-// export default router;
 import express from 'express';
 import fs from 'fs';
 import path from 'path';
