@@ -52,36 +52,6 @@ export const createStripeSession = async (req, res) => {
   }
 };
 
-// export const confirmStripePayment = async (req, res) => {
-//   const { session_id } = req.body;
-//   if (!session_id) return res.status(400).json({ message: "Session ID required" });
-
-//   try {
-//     const session = await stripe.checkout.sessions.retrieve(session_id);
-
-//     if (session.payment_status === 'paid') {
-//       const order = await PaymentOrder.findOne({ transactionUUID: session_id });
-//       if (!order) return res.status(404).json({ message: 'Order not found' });
-
-//       order.status = 'completed';
-//       await order.save();
-
-//       const user = await User.findById(session.metadata.userId);
-//       if (user) {
-//         user.subscribed = true;
-//         user.subscriptionExpiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-//         await user.save();
-//       }
-
-//       return res.json({ message: 'Payment confirmed and subscription updated' });
-//     }
-
-//     return res.status(400).json({ message: "Payment not completed" });
-//   } catch (err) {
-//     console.error("Confirm error:", err);
-//     return res.status(500).json({ message: "Error confirming payment" });
-//   }
-// };
 export const confirmStripePayment = async (req, res) => {
   //console.log("Stripe confirm payment body:", req.body);
   const { session_id } = req.body;
