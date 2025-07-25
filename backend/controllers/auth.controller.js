@@ -182,44 +182,6 @@ export const signin = async (req, res, next) => {
 };
 
 
-// New controller: Change password after expiry enforcement
-// export const changeExpiredPassword = async (req, res, next) => {
-//   try {
-//     const safeBody = mongoSanitize(req.body);
-//     const { userId, newPassword } = safeBody;
-
-//     if (!userId || !newPassword)
-//       return next(errorHandler(400, 'User ID and new password are required'));
-
-//     if (!isPasswordStrong(newPassword))
-//       return next(errorHandler(400, 'Password does not meet complexity requirements'));
-
-//     const user = await User.findById(userId).select('+password +oldPasswords');
-//     if (!user) return next(errorHandler(404, 'User not found'));
-
-//     // Prevent password reuse
-//     for (const oldHashed of user.oldPasswords || []) {
-//       if (await bcryptjs.compare(newPassword, oldHashed)) {
-//         return next(errorHandler(400, 'You cannot reuse a recent password.'));
-//       }
-//     }
-
-//     // Hash and update password and passwordChangedAt
-//     const hashedNewPassword = await bcryptjs.hash(newPassword, 10);
-//     user.oldPasswords = [user.password, ...(user.oldPasswords || [])].slice(0, 5);
-//     user.password = hashedNewPassword;
-//     user.passwordChangedAt = new Date();
-
-//     await user.save();
-
-//     await logActivity(user._id, 'Password Changed After Expiry');
-
-//     res.status(200).json({ success: true, message: 'Password updated successfully' });
-//   } catch (error) {
-//     next(error);
-//   }
-// };
-
 // VERIFY SIGNIN OTP
 export const verifySigninOTP = async (req, res, next) => {
   try {
