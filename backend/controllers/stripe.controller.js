@@ -2,13 +2,12 @@ import Stripe from 'stripe';
 import PaymentOrder from '../models/paymentOrder.model.js';
 import User from '../models/user.model.js';
 
-// const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-console.log("ENV STRIPE_SECRET_KEY:", process.env.STRIPE_SECRET_KEY );
+
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_51RoFfJ1e1pHn96P9eWaS36sTN0Yoy6al1bNvqRCnCNiKdMb9dIES6233DtbxBQWRprzI08WXeRuHg8xBI9rxBQfo00Gv55KTU9', {
   apiVersion: '2024-04-10',
 });
-console.log("Stripe Key Loaded:", process.env.STRIPE_SECRET_KEY?.slice(0, 10));
+
 
 export const createStripeSession = async (req, res) => {
   try {
@@ -84,9 +83,9 @@ export const createStripeSession = async (req, res) => {
 //   }
 // };
 export const confirmStripePayment = async (req, res) => {
-  console.log("Stripe confirm payment body:", req.body);
+  //console.log("Stripe confirm payment body:", req.body);
   const { session_id } = req.body;
- console.log("Stripe confirm session_id:", session_id);
+ //console.log("Stripe confirm session_id:", session_id);
   if (!session_id) {
     return res.status(400).json({ message: "Session ID required" });
   }

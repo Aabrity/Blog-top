@@ -27,3 +27,4 @@ dist-ssr
 *.cert
 uploads
 *.pem
+*.crt

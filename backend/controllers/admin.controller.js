@@ -1,7 +1,7 @@
 
+import mongoSanitize from 'mongo-sanitize';
 import Report from '../models/report.model.js';
 import { errorHandler } from '../utils/error.js';
-import mongoSanitize from 'mongo-sanitize';  
 
 // Utility to validate positive integers for pagination
 const validatePositiveInt = (value, defaultValue) => {
@@ -24,6 +24,8 @@ export const getAllReports = async (req, res, next) => {
     // Validate and convert to numbers with defaults
     const page = validatePositiveInt(pageRaw, 1);
     const limit = validatePositiveInt(limitRaw, 20);
+    //console.log({ page, limit });
+
     const skip = (page - 1) * limit;
 
     // Fetch total count for pagination info

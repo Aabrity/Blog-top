@@ -1,10 +1,12 @@
 
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import csrf from 'csurf';
 import dotenv from 'dotenv';
 import express from 'express';
 import mongoSanitize from 'express-mongo-sanitize';
 import rateLimit from 'express-rate-limit';
+import session from 'express-session';
 import fs from 'fs';
 import helmet from 'helmet';
 import http from 'http';
@@ -18,10 +20,8 @@ import commentRoutes from './routes/comment.route.js';
 import postRoutes from './routes/post.route.js';
 import reportRoutes from './routes/report.route.js';
 import userRoutes from './routes/user.route.js';
-import csrf from 'csurf';
-import session from 'express-session';
 // import paymentRoutes from '../routes/payment.routes.js'; 
-import paymentRoutes from "./routes/payment.routes.js"
+import paymentRoutes from "./routes/payment.routes.js";
 dotenv.config();
 
 const __dirname = path.resolve();
@@ -50,7 +50,7 @@ app.use(
     resave: false,
     saveUninitialized: true,
     cookie: {
-      secure: process.env.NODE_ENV === 'production', // true if HTTPS
+      secure: process.env.NODE_ENV === 'production', 
       sameSite: 'Strict',
       httpOnly: true,
     },
@@ -78,7 +78,7 @@ app.use(csrfProtection);
 app.get('/api/csrf-token', (req, res) => {
   try {
     const token = req.csrfToken();
-    // console.log('Generated CSRF token:', token);
+    // //console.log('Generated CSRF token:', token);
     res.json({ csrfToken: token });
   } catch (error) {
     console.error('CSRF token error:', error);
@@ -102,7 +102,7 @@ mongoose
     autoIndex: false, // Prevents index creation DoS
   })
   .then(() => {
-    console.log('✅ MongoDB connected');
+    //console.log('✅ MongoDB connected');
   })
   .catch((err) => {
     console.error('❌ MongoDB connection error:', err);
@@ -181,8 +181,8 @@ app.use((err, req, res, next) => {
 
 // ===== HTTPS Setup =====
 const sslOptions = {
-  key: fs.readFileSync('server.key'), // Replace with your cert key path
-  cert: fs.readFileSync('server.cert'), // Replace with your cert path
+  key: fs.readFileSync('server.key'), 
+  cert: fs.readFileSync('server.cert'), 
 };
 
 // Start HTTPS server
@@ -199,5 +199,5 @@ http
     res.end();
   })
   .listen(80, () => {
-    console.log('🔄 HTTP Server redirecting all traffic to HTTPS');
+    //console.log('🔄 HTTP Server redirecting all traffic to HTTPS');
   });

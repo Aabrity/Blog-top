@@ -204,6 +204,14 @@ export const updateUser = async (req, res, next) => {
   req.body = sanitize(req.body);
   req.params = sanitize(req.params);
 
+const forbiddenFields = ['isAdmin', 'subscribed'];
+for (const field of forbiddenFields) {
+  if (field in req.body) {
+    return next(errorHandler(403, `You are not allowed to update '${field}' field`));
+  }
+}
+
+
   if (!validateObjectId(req.params.userId)) {
     return next(errorHandler(400, 'Invalid user ID'));
   }
@@ -433,7 +441,7 @@ export const updateUserProfilePicture = async (req, res, next) => {
     // Validate file type
     const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
     if (!allowedMimeTypes.includes(req.file.mimetype)) {
-      fs.unlinkSync(req.file.path); // Delete invalid file
+      fs.unlinkSync(req.file.path); 
       return next(errorHandler(400, 'Invalid image format'));
     }
 

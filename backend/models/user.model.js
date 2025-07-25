@@ -27,18 +27,18 @@ const userSchema = new mongoose.Schema(
         validator: validator.isEmail,
         message: 'Please provide a valid email address',
       },
-      index: true, // for faster lookup
+      index: true, 
     },
     password: {
       type: String,
       required: [true, 'Password is required'],
       minlength: [8, 'Password must be at least 8 characters long'],
-      select: false, // do not return password by default
+      select: false, 
     },
     profilePicture: {
       type: String,
       default:
-        'person.png', // default profile picture if none is uploaded
+        'person.png', 
     },
     isAdmin: {
       type: Boolean,
