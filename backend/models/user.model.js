@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema(
       minlength: [3, 'Username must be at least 3 characters'],
       maxlength: [30, 'Username must be at most 30 characters'],
       match: [/^[a-zA-Z0-9_]+$/, 'Username must be alphanumeric (with underscores)'],
-      index: true, // for faster lookup
+      index: true, 
     },
     email: {
       type: String,
@@ -68,7 +68,7 @@ const userSchema = new mongoose.Schema(
        oldPasswords: {
       type: [String],
       default: [],
-      select: false, // do not expose this by default
+      select: false, 
     },
     passwordChangedAt: {
       type: Date,
